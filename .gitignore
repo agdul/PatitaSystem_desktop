@@ -1,0 +1,37 @@
+# Archivos y carpetas de Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Compilaciones
+bin/
+obj/
+Debug/
+Release/
+[Bb]uild/
+x64/
+x86/
+[Aa][Rr][Mm]*/
+[Ll]og/
+[Bb]ackup/
+
+# Resultados de test
+TestResults/
+*.trx
+
+# Paquetes
+*.nupkg
+*.snupkg
+packages/
+
+# Archivos temporales / cache
+*.cache
+*.log
+*.opendb
+*.dbmdl
+
+# Archivos del sistema
+Thumbs.db
+Desktop.ini
