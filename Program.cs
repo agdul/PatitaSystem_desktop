@@ -1,6 +1,7 @@
 using PatitaSystem;
+using PatitaSystem.Presentacion.Forms;
 
-namespace Presentacion
+namespace PatitaSystem
 {
     internal static class Program
     {
@@ -13,7 +14,7 @@ namespace Presentacion
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new Dashboard_Form());
+            Application.Run(new Turnos_Form());
         }
     }
 }
