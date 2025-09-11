@@ -11,17 +11,20 @@ public sealed class ContextoPatita : ApplicationContext
     public ContextoPatita(ServiceProvider provider)
     {
         _provider = provider;
-        ShowLogin(); // método SIN async
+        ShowLogin();
     }
+    private bool _navegandoADashboard;
 
     private void ShowLogin()
     {
-        var login = _provider.GetRequiredService<Login_Form>();
+        var login = _provider.GetRequiredService<Login_Form>(); // obtenemos el formulario Login_Form desde el contenedor de servicios , instancias de formulario
 
-        // Lambda ASÍNCRONA (NO cambies esta firma con la app corriendo)
         login.LoginSucceeded += async (_, __) =>
         {
+            // Recuperamos el token store para verificar que el token se haya guardado
             var tokenStore = _provider.GetRequiredService<ITokenStore>();
+
+            // Verificamos que el token se haya guardado correctamente
             var token = await tokenStore.LoadAsync();
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -30,24 +33,36 @@ public sealed class ContextoPatita : ApplicationContext
                 return;
             }
 
+            _navegandoADashboard = true; // Indicamos que estamos navegando al dashboard
+
+            // Ocultamos el formulario de login y mostramos el dashboard
             login.Hide();
+
+            // Mostramos el dashboard
             ShowDashboard();
-            login.Close();
+            
         };
 
-        login.FormClosed += (_, __) =>
+
+        login.FormClosed += (_, __) => // 
         {
-            if (Application.OpenForms.Count == 0)
+            if (!_navegandoADashboard)
                 ExitThread();
         };
 
         login.Show();
     }
 
-    private void ShowDashboard() // SIN async
+    private void ShowDashboard() 
     {
-        var dashboard = _provider.GetRequiredService<Dashboard_Form>();
-        dashboard.FormClosed += (_, __) => ExitThread();
-        dashboard.Show();
+        try { 
+           var dashboard = _provider.GetRequiredService<Dashboard_Form>();
+           dashboard.FormClosed += (_, __) => ExitThread();
+           dashboard.Show();
+        } 
+        catch (Exception ex) { 
+              MessageBox.Show($"No se pudo abrir el dashboard: {ex.Message}", "Error",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 }

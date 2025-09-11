@@ -14,6 +14,25 @@ internal static class Program
     [STAThread]
     static void Main()
     {
+        ApplicationConfiguration.Initialize(); // Siempre al inicio de Main
+
+
+        // ----------------------------------------
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+        Application.ThreadException += (s, ex) =>
+        {
+            MessageBox.Show(ex.Exception.ToString(), "ThreadException",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        };
+        AppDomain.CurrentDomain.UnhandledException += (s, ex) =>
+        {
+            MessageBox.Show(ex.ExceptionObject?.ToString() ?? "Error desconocido",
+                "UnhandledException", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        };
+        // ----------------------------------------
+
+
+        // Configuramos el contenedor de servicios
         var config = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -48,10 +67,10 @@ internal static class Program
         services.AddTransient<Login_Form>();
         services.AddTransient<Dashboard_Form>();
 
+
+        // Corremos la app con nuestro ApplicationContext
         var provider = services.BuildServiceProvider();
-        // 👉 Corremos la app con nuestro ApplicationContext
         Application.Run(new ContextoPatita((ServiceProvider)provider));
 
-        ApplicationConfiguration.Initialize();
     }
 }

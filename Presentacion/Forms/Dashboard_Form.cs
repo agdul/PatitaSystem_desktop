@@ -15,21 +15,28 @@ public partial class Dashboard_Form : MaterialForm
     {
         InitializeComponent();
 
-        // MaterialSkin
-        var skin = MaterialSkinManager.Instance;
-        skin.AddFormToManage(this);
-        skin.Theme = MaterialSkinManager.Themes.DARK;
-        skin.ColorScheme = new ColorScheme(
-            Primary.Teal700, Primary.Teal900, Primary.Teal500,
-            Accent.Green200, TextShade.WHITE
-        );
+        try { 
+          // MaterialSkin
+          var skin = MaterialSkinManager.Instance;
+          skin.AddFormToManage(this);
+          skin.Theme = MaterialSkinManager.Themes.DARK;
+          skin.ColorScheme = new ColorScheme(
+             Primary.Teal700, Primary.Teal900, Primary.Teal500,
+             Accent.Green200, TextShade.WHITE
+          );
 
-        // Asegurar que el Drawer NO esté en el árbol al iniciar
-        if (Controls.Contains(DRW_Menu))
-            Controls.Remove(DRW_Menu);
+          // Asegurar que el Drawer NO esté en el árbol al iniciar
+          if (Controls.Contains(DRW_Menu))
+               Controls.Remove(DRW_Menu);
 
-        // Centrar logo+botón al arrancar
-        RelayoutNow();
+          // Centrar logo+botón al arrancar
+          RelayoutNow();
+        } 
+        catch (Exception ex){
+            MessageBox.Show("Error en constructor de Dashboard:\n\n" + ex,
+               "Dashboard", MessageBoxButtons.OK, MessageBoxIcon.Error);
+           throw;
+        }
     }
 
     // CLICK del botón
