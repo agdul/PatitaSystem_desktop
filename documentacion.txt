@@ -1,0 +1,8 @@
+﻿Flujo de datos
+
+Login_Form ➜ llama IAuthService.LoginAsync(req) ➜
+AuthService ➜ HttpClient("PatitaApiPublic") hace POST /auth/login ➜
+API devuelve JSON ➜ ReadFromJsonAsync<LoginResponse>() ➜
+AuthService guarda user.token en ITokenStore ➜
+Login_Form recibe Result<LoginResponse> ➜ si OK dispara LoginSucceeded ➜
+PatitaAppContext abre Dashboard.

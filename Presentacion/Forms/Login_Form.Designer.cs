@@ -30,93 +30,93 @@ partial class Login_Form
     /// </summary>
     private void InitializeComponent()
     {
-        PictureBox pictureBox1;
-        materialCard1 = new RoundedMaterialCard();
-        materialButton2 = new MaterialSkin.Controls.MaterialButton();
-        materialCard2 = new MaterialSkin.Controls.MaterialCard();
+        PictureBox PIC_Usuario;
+        CARD_Login = new RoundedMaterialCard();
+        BTN_Salir = new MaterialSkin.Controls.MaterialButton();
+        CARD_FormLogin = new MaterialSkin.Controls.MaterialCard();
         tableLayoutPanel1 = new TableLayoutPanel();
-        materialTextBox2 = new MaterialSkin.Controls.MaterialTextBox();
-        materialLabel2 = new MaterialSkin.Controls.MaterialLabel();
-        materialLabel1 = new MaterialSkin.Controls.MaterialLabel();
-        materialTextBox1 = new MaterialSkin.Controls.MaterialTextBox();
-        pictureBox2 = new PictureBox();
-        materialSwitch1 = new MaterialSkin.Controls.MaterialSwitch();
-        materialButton1 = new MaterialSkin.Controls.MaterialButton();
-        pictureBox3 = new PictureBox();
-        pictureBox1 = new PictureBox();
-        ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-        materialCard1.SuspendLayout();
-        materialCard2.SuspendLayout();
+        TXTB_Password = new MaterialSkin.Controls.MaterialTextBox();
+        LBL_Password = new MaterialSkin.Controls.MaterialLabel();
+        LBL_Usuario = new MaterialSkin.Controls.MaterialLabel();
+        TXTB_Usuario = new MaterialSkin.Controls.MaterialTextBox();
+        PIC_Password = new PictureBox();
+        SWCH_Password = new MaterialSkin.Controls.MaterialSwitch();
+        BTN_Ingresar = new MaterialSkin.Controls.MaterialButton();
+        PIC_Logo = new PictureBox();
+        PIC_Usuario = new PictureBox();
+        ((System.ComponentModel.ISupportInitialize)PIC_Usuario).BeginInit();
+        CARD_Login.SuspendLayout();
+        CARD_FormLogin.SuspendLayout();
         tableLayoutPanel1.SuspendLayout();
-        ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)PIC_Password).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)PIC_Logo).BeginInit();
         SuspendLayout();
         // 
-        // pictureBox1
+        // PIC_Usuario
         // 
-        pictureBox1.Dock = DockStyle.Fill;
-        pictureBox1.Image = Properties.Resources.member;
-        pictureBox1.Location = new Point(3, 3);
-        pictureBox1.Name = "pictureBox1";
-        pictureBox1.Size = new Size(42, 54);
-        pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-        pictureBox1.TabIndex = 0;
-        pictureBox1.TabStop = false;
+        PIC_Usuario.Dock = DockStyle.Fill;
+        PIC_Usuario.Image = Properties.Resources.member;
+        PIC_Usuario.Location = new Point(3, 3);
+        PIC_Usuario.Name = "PIC_Usuario";
+        PIC_Usuario.Size = new Size(42, 54);
+        PIC_Usuario.SizeMode = PictureBoxSizeMode.Zoom;
+        PIC_Usuario.TabIndex = 0;
+        PIC_Usuario.TabStop = false;
         // 
-        // materialCard1
+        // CARD_Login
         // 
-        materialCard1.BackColor = Color.FromArgb(255, 255, 255);
-        materialCard1.Controls.Add(materialButton2);
-        materialCard1.Controls.Add(materialCard2);
-        materialCard1.Controls.Add(materialButton1);
-        materialCard1.Depth = 0;
-        materialCard1.ForeColor = Color.FromArgb(222, 0, 0, 0);
-        materialCard1.Location = new Point(39, 217);
-        materialCard1.Margin = new Padding(14);
-        materialCard1.MouseState = MaterialSkin.MouseState.HOVER;
-        materialCard1.Name = "materialCard1";
-        materialCard1.Padding = new Padding(14, 11, 11, 14);
-        materialCard1.Size = new Size(407, 293);
-        materialCard1.TabIndex = 0;
+        CARD_Login.BackColor = Color.FromArgb(255, 255, 255);
+        CARD_Login.Controls.Add(BTN_Salir);
+        CARD_Login.Controls.Add(CARD_FormLogin);
+        CARD_Login.Controls.Add(BTN_Ingresar);
+        CARD_Login.Depth = 0;
+        CARD_Login.ForeColor = Color.FromArgb(222, 0, 0, 0);
+        CARD_Login.Location = new Point(39, 217);
+        CARD_Login.Margin = new Padding(14);
+        CARD_Login.MouseState = MaterialSkin.MouseState.HOVER;
+        CARD_Login.Name = "CARD_Login";
+        CARD_Login.Padding = new Padding(14, 11, 11, 14);
+        CARD_Login.Size = new Size(407, 293);
+        CARD_Login.TabIndex = 0;
         // 
-        // materialButton2
+        // BTN_Salir
         // 
-        materialButton2.AutoSize = false;
-        materialButton2.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-        materialButton2.BackColor = Color.FromArgb(45, 45, 48);
-        materialButton2.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-        materialButton2.Depth = 0;
-        materialButton2.FlatStyle = FlatStyle.Flat;
-        materialButton2.ForeColor = Color.White;
-        materialButton2.HighEmphasis = true;
-        materialButton2.Icon = null;
-        materialButton2.Location = new Point(252, 228);
-        materialButton2.Margin = new Padding(4, 6, 4, 6);
-        materialButton2.MouseState = MaterialSkin.MouseState.HOVER;
-        materialButton2.Name = "materialButton2";
-        materialButton2.NoAccentTextColor = Color.Empty;
-        materialButton2.Size = new Size(91, 36);
-        materialButton2.TabIndex = 2;
-        materialButton2.Text = "Salir";
-        materialButton2.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Text;
-        materialButton2.UseAccentColor = false;
-        materialButton2.UseVisualStyleBackColor = false;
+        BTN_Salir.AutoSize = false;
+        BTN_Salir.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        BTN_Salir.BackColor = Color.FromArgb(45, 45, 48);
+        BTN_Salir.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+        BTN_Salir.Depth = 0;
+        BTN_Salir.FlatStyle = FlatStyle.Flat;
+        BTN_Salir.ForeColor = Color.White;
+        BTN_Salir.HighEmphasis = true;
+        BTN_Salir.Icon = null;
+        BTN_Salir.Location = new Point(252, 228);
+        BTN_Salir.Margin = new Padding(4, 6, 4, 6);
+        BTN_Salir.MouseState = MaterialSkin.MouseState.HOVER;
+        BTN_Salir.Name = "BTN_Salir";
+        BTN_Salir.NoAccentTextColor = Color.Empty;
+        BTN_Salir.Size = new Size(91, 36);
+        BTN_Salir.TabIndex = 2;
+        BTN_Salir.Text = "Salir";
+        BTN_Salir.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Text;
+        BTN_Salir.UseAccentColor = false;
+        BTN_Salir.UseVisualStyleBackColor = false;
         // 
-        // materialCard2
+        // CARD_FormLogin
         // 
-        materialCard2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        materialCard2.BackColor = Color.FromArgb(255, 255, 255);
-        materialCard2.Controls.Add(tableLayoutPanel1);
-        materialCard2.Controls.Add(materialSwitch1);
-        materialCard2.Depth = 0;
-        materialCard2.ForeColor = Color.FromArgb(222, 0, 0, 0);
-        materialCard2.Location = new Point(28, 31);
-        materialCard2.Margin = new Padding(14);
-        materialCard2.MouseState = MaterialSkin.MouseState.HOVER;
-        materialCard2.Name = "materialCard2";
-        materialCard2.Padding = new Padding(14);
-        materialCard2.Size = new Size(354, 189);
-        materialCard2.TabIndex = 1;
+        CARD_FormLogin.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        CARD_FormLogin.BackColor = Color.FromArgb(255, 255, 255);
+        CARD_FormLogin.Controls.Add(tableLayoutPanel1);
+        CARD_FormLogin.Controls.Add(SWCH_Password);
+        CARD_FormLogin.Depth = 0;
+        CARD_FormLogin.ForeColor = Color.FromArgb(222, 0, 0, 0);
+        CARD_FormLogin.Location = new Point(28, 31);
+        CARD_FormLogin.Margin = new Padding(14);
+        CARD_FormLogin.MouseState = MaterialSkin.MouseState.HOVER;
+        CARD_FormLogin.Name = "CARD_FormLogin";
+        CARD_FormLogin.Padding = new Padding(14);
+        CARD_FormLogin.Size = new Size(354, 189);
+        CARD_FormLogin.TabIndex = 1;
         // 
         // tableLayoutPanel1
         // 
@@ -124,12 +124,12 @@ partial class Login_Form
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 34.10853F));
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65.89147F));
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 176F));
-        tableLayoutPanel1.Controls.Add(materialTextBox2, 2, 1);
-        tableLayoutPanel1.Controls.Add(materialLabel2, 1, 1);
-        tableLayoutPanel1.Controls.Add(pictureBox1, 0, 0);
-        tableLayoutPanel1.Controls.Add(materialLabel1, 1, 0);
-        tableLayoutPanel1.Controls.Add(materialTextBox1, 2, 0);
-        tableLayoutPanel1.Controls.Add(pictureBox2, 0, 1);
+        tableLayoutPanel1.Controls.Add(TXTB_Password, 2, 1);
+        tableLayoutPanel1.Controls.Add(LBL_Password, 1, 1);
+        tableLayoutPanel1.Controls.Add(PIC_Usuario, 0, 0);
+        tableLayoutPanel1.Controls.Add(LBL_Usuario, 1, 0);
+        tableLayoutPanel1.Controls.Add(TXTB_Usuario, 2, 0);
+        tableLayoutPanel1.Controls.Add(PIC_Password, 0, 1);
         tableLayoutPanel1.Location = new Point(17, 21);
         tableLayoutPanel1.Name = "tableLayoutPanel1";
         tableLayoutPanel1.RowCount = 2;
@@ -138,166 +138,166 @@ partial class Login_Form
         tableLayoutPanel1.Size = new Size(318, 116);
         tableLayoutPanel1.TabIndex = 0;
         // 
-        // materialTextBox2
+        // TXTB_Password
         // 
-        materialTextBox2.AnimateReadOnly = false;
-        materialTextBox2.BorderStyle = BorderStyle.None;
-        materialTextBox2.Depth = 0;
-        materialTextBox2.Dock = DockStyle.Fill;
-        materialTextBox2.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-        materialTextBox2.LeadingIcon = null;
-        materialTextBox2.Location = new Point(144, 63);
-        materialTextBox2.MaxLength = 50;
-        materialTextBox2.MouseState = MaterialSkin.MouseState.OUT;
-        materialTextBox2.Multiline = false;
-        materialTextBox2.Name = "materialTextBox2";
-        materialTextBox2.Size = new Size(171, 50);
-        materialTextBox2.TabIndex = 5;
-        materialTextBox2.Text = "";
-        materialTextBox2.TrailingIcon = null;
+        TXTB_Password.AnimateReadOnly = false;
+        TXTB_Password.BorderStyle = BorderStyle.None;
+        TXTB_Password.Depth = 0;
+        TXTB_Password.Dock = DockStyle.Fill;
+        TXTB_Password.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+        TXTB_Password.LeadingIcon = null;
+        TXTB_Password.Location = new Point(144, 63);
+        TXTB_Password.MaxLength = 50;
+        TXTB_Password.MouseState = MaterialSkin.MouseState.OUT;
+        TXTB_Password.Multiline = false;
+        TXTB_Password.Name = "TXTB_Password";
+        TXTB_Password.Size = new Size(171, 50);
+        TXTB_Password.TabIndex = 5;
+        TXTB_Password.Text = "";
+        TXTB_Password.TrailingIcon = null;
         // 
-        // materialLabel2
+        // LBL_Password
         // 
-        materialLabel2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        materialLabel2.AutoSize = true;
-        materialLabel2.Depth = 0;
-        materialLabel2.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-        materialLabel2.Location = new Point(51, 60);
-        materialLabel2.MouseState = MaterialSkin.MouseState.HOVER;
-        materialLabel2.Name = "materialLabel2";
-        materialLabel2.RightToLeft = RightToLeft.No;
-        materialLabel2.Size = new Size(87, 56);
-        materialLabel2.TabIndex = 4;
-        materialLabel2.Text = "Contraseña";
-        materialLabel2.TextAlign = ContentAlignment.MiddleLeft;
+        LBL_Password.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        LBL_Password.AutoSize = true;
+        LBL_Password.Depth = 0;
+        LBL_Password.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
+        LBL_Password.Location = new Point(51, 60);
+        LBL_Password.MouseState = MaterialSkin.MouseState.HOVER;
+        LBL_Password.Name = "LBL_Password";
+        LBL_Password.RightToLeft = RightToLeft.No;
+        LBL_Password.Size = new Size(87, 56);
+        LBL_Password.TabIndex = 4;
+        LBL_Password.Text = "Contraseña";
+        LBL_Password.TextAlign = ContentAlignment.MiddleLeft;
         // 
-        // materialLabel1
+        // LBL_Usuario
         // 
-        materialLabel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        materialLabel1.AutoSize = true;
-        materialLabel1.Depth = 0;
-        materialLabel1.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-        materialLabel1.Location = new Point(51, 0);
-        materialLabel1.MouseState = MaterialSkin.MouseState.HOVER;
-        materialLabel1.Name = "materialLabel1";
-        materialLabel1.RightToLeft = RightToLeft.No;
-        materialLabel1.Size = new Size(87, 60);
-        materialLabel1.TabIndex = 1;
-        materialLabel1.Text = "Usuario";
-        materialLabel1.TextAlign = ContentAlignment.MiddleLeft;
+        LBL_Usuario.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        LBL_Usuario.AutoSize = true;
+        LBL_Usuario.Depth = 0;
+        LBL_Usuario.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
+        LBL_Usuario.Location = new Point(51, 0);
+        LBL_Usuario.MouseState = MaterialSkin.MouseState.HOVER;
+        LBL_Usuario.Name = "LBL_Usuario";
+        LBL_Usuario.RightToLeft = RightToLeft.No;
+        LBL_Usuario.Size = new Size(87, 60);
+        LBL_Usuario.TabIndex = 1;
+        LBL_Usuario.Text = "Usuario";
+        LBL_Usuario.TextAlign = ContentAlignment.MiddleLeft;
         // 
-        // materialTextBox1
+        // TXTB_Usuario
         // 
-        materialTextBox1.AnimateReadOnly = false;
-        materialTextBox1.BorderStyle = BorderStyle.None;
-        materialTextBox1.Depth = 0;
-        materialTextBox1.Dock = DockStyle.Fill;
-        materialTextBox1.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-        materialTextBox1.LeadingIcon = null;
-        materialTextBox1.Location = new Point(144, 3);
-        materialTextBox1.MaxLength = 50;
-        materialTextBox1.MouseState = MaterialSkin.MouseState.OUT;
-        materialTextBox1.Multiline = false;
-        materialTextBox1.Name = "materialTextBox1";
-        materialTextBox1.Size = new Size(171, 50);
-        materialTextBox1.TabIndex = 2;
-        materialTextBox1.Text = "";
-        materialTextBox1.TrailingIcon = null;
+        TXTB_Usuario.AnimateReadOnly = false;
+        TXTB_Usuario.BorderStyle = BorderStyle.None;
+        TXTB_Usuario.Depth = 0;
+        TXTB_Usuario.Dock = DockStyle.Fill;
+        TXTB_Usuario.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+        TXTB_Usuario.LeadingIcon = null;
+        TXTB_Usuario.Location = new Point(144, 3);
+        TXTB_Usuario.MaxLength = 50;
+        TXTB_Usuario.MouseState = MaterialSkin.MouseState.OUT;
+        TXTB_Usuario.Multiline = false;
+        TXTB_Usuario.Name = "TXTB_Usuario";
+        TXTB_Usuario.Size = new Size(171, 50);
+        TXTB_Usuario.TabIndex = 2;
+        TXTB_Usuario.Text = "";
+        TXTB_Usuario.TrailingIcon = null;
         // 
-        // pictureBox2
+        // PIC_Password
         // 
-        pictureBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        pictureBox2.Image = Properties.Resources.key2;
-        pictureBox2.Location = new Point(3, 63);
-        pictureBox2.Name = "pictureBox2";
-        pictureBox2.Size = new Size(42, 50);
-        pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
-        pictureBox2.TabIndex = 3;
-        pictureBox2.TabStop = false;
+        PIC_Password.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        PIC_Password.Image = Properties.Resources.key2;
+        PIC_Password.Location = new Point(3, 63);
+        PIC_Password.Name = "PIC_Password";
+        PIC_Password.Size = new Size(42, 50);
+        PIC_Password.SizeMode = PictureBoxSizeMode.Zoom;
+        PIC_Password.TabIndex = 3;
+        PIC_Password.TabStop = false;
         // 
-        // materialSwitch1
+        // SWCH_Password
         // 
-        materialSwitch1.Anchor = AnchorStyles.None;
-        materialSwitch1.Depth = 0;
-        materialSwitch1.Location = new Point(20, 151);
-        materialSwitch1.Margin = new Padding(0);
-        materialSwitch1.MouseLocation = new Point(-1, -1);
-        materialSwitch1.MouseState = MaterialSkin.MouseState.HOVER;
-        materialSwitch1.Name = "materialSwitch1";
-        materialSwitch1.Ripple = true;
-        materialSwitch1.Size = new Size(210, 24);
-        materialSwitch1.TabIndex = 6;
-        materialSwitch1.Text = "Mostrar contraseña";
-        materialSwitch1.TextAlign = ContentAlignment.MiddleCenter;
-        materialSwitch1.UseVisualStyleBackColor = true;
+        SWCH_Password.Anchor = AnchorStyles.None;
+        SWCH_Password.Depth = 0;
+        SWCH_Password.Location = new Point(20, 151);
+        SWCH_Password.Margin = new Padding(0);
+        SWCH_Password.MouseLocation = new Point(-1, -1);
+        SWCH_Password.MouseState = MaterialSkin.MouseState.HOVER;
+        SWCH_Password.Name = "SWCH_Password";
+        SWCH_Password.Ripple = true;
+        SWCH_Password.Size = new Size(210, 24);
+        SWCH_Password.TabIndex = 6;
+        SWCH_Password.Text = "Mostrar contraseña";
+        SWCH_Password.TextAlign = ContentAlignment.MiddleCenter;
+        SWCH_Password.UseVisualStyleBackColor = true;
         // 
-        // materialButton1
+        // BTN_Ingresar
         // 
-        materialButton1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-        materialButton1.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-        materialButton1.Depth = 0;
-        materialButton1.HighEmphasis = true;
-        materialButton1.Icon = null;
-        materialButton1.Location = new Point(63, 228);
-        materialButton1.Margin = new Padding(4, 6, 4, 6);
-        materialButton1.MouseState = MaterialSkin.MouseState.HOVER;
-        materialButton1.Name = "materialButton1";
-        materialButton1.NoAccentTextColor = Color.Empty;
-        materialButton1.Size = new Size(91, 36);
-        materialButton1.TabIndex = 1;
-        materialButton1.Text = "Ingresar";
-        materialButton1.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-        materialButton1.UseAccentColor = false;
-        materialButton1.UseVisualStyleBackColor = true;
+        BTN_Ingresar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        BTN_Ingresar.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+        BTN_Ingresar.Depth = 0;
+        BTN_Ingresar.HighEmphasis = true;
+        BTN_Ingresar.Icon = null;
+        BTN_Ingresar.Location = new Point(63, 228);
+        BTN_Ingresar.Margin = new Padding(4, 6, 4, 6);
+        BTN_Ingresar.MouseState = MaterialSkin.MouseState.HOVER;
+        BTN_Ingresar.Name = "BTN_Ingresar";
+        BTN_Ingresar.NoAccentTextColor = Color.Empty;
+        BTN_Ingresar.Size = new Size(91, 36);
+        BTN_Ingresar.TabIndex = 1;
+        BTN_Ingresar.Text = "Ingresar";
+        BTN_Ingresar.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+        BTN_Ingresar.UseAccentColor = false;
+        BTN_Ingresar.UseVisualStyleBackColor = true;
         // 
-        // pictureBox3
+        // PIC_Logo
         // 
-        pictureBox3.Image = Properties.Resources.logo2;
-        pictureBox3.Location = new Point(39, 27);
-        pictureBox3.Name = "pictureBox3";
-        pictureBox3.Size = new Size(407, 236);
-        pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
-        pictureBox3.TabIndex = 3;
-        pictureBox3.TabStop = false;
+        PIC_Logo.Image = Properties.Resources.logo2;
+        PIC_Logo.Location = new Point(39, 27);
+        PIC_Logo.Name = "PIC_Logo";
+        PIC_Logo.Size = new Size(407, 236);
+        PIC_Logo.SizeMode = PictureBoxSizeMode.Zoom;
+        PIC_Logo.TabIndex = 3;
+        PIC_Logo.TabStop = false;
         // 
-        // Form3
+        // Login_Form
         // 
-        ClientSize = new Size(584, 790);
-        Controls.Add(materialCard1);
-        Controls.Add(pictureBox3);
+        ClientSize = new Size(728, 1100);
+        Controls.Add(CARD_Login);
+        Controls.Add(PIC_Logo);
         FormBorderStyle = FormBorderStyle.FixedSingle;
         FormStyle = FormStyles.ActionBar_None;
         MaximizeBox = false;
-        Name = "Form3";
+        Name = "Login_Form";
         Padding = new Padding(3, 24, 35, 5);
         RightToLeft = RightToLeft.No;
         SizeGripStyle = SizeGripStyle.Hide;
         StartPosition = FormStartPosition.CenterScreen;
         Text = "Login";
-        ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-        materialCard1.ResumeLayout(false);
-        materialCard1.PerformLayout();
-        materialCard2.ResumeLayout(false);
+        ((System.ComponentModel.ISupportInitialize)PIC_Usuario).EndInit();
+        CARD_Login.ResumeLayout(false);
+        CARD_Login.PerformLayout();
+        CARD_FormLogin.ResumeLayout(false);
         tableLayoutPanel1.ResumeLayout(false);
         tableLayoutPanel1.PerformLayout();
-        ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
-        ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
+        ((System.ComponentModel.ISupportInitialize)PIC_Password).EndInit();
+        ((System.ComponentModel.ISupportInitialize)PIC_Logo).EndInit();
         ResumeLayout(false);
 
     }
 
     #endregion
     private TableLayoutPanel tableLayoutPanel1;
-    private MaterialSkin.Controls.MaterialCard materialCard2;
-    private PictureBox pictureBox1;
-    private MaterialSkin.Controls.MaterialLabel materialLabel1;
-    private MaterialSkin.Controls.MaterialTextBox materialTextBox1;
-    private PictureBox pictureBox2;
-    private MaterialSkin.Controls.MaterialTextBox materialTextBox2;
-    private MaterialSkin.Controls.MaterialLabel materialLabel2;
-    private MaterialSkin.Controls.MaterialSwitch materialSwitch1;
-    private MaterialSkin.Controls.MaterialButton materialButton1;
-    private MaterialSkin.Controls.MaterialButton materialButton2;
-    private PictureBox pictureBox3;
-    private RoundedMaterialCard materialCard1;
+    private MaterialSkin.Controls.MaterialCard CARD_FormLogin;
+    private PictureBox PIC_Usuario;
+    private MaterialSkin.Controls.MaterialLabel LBL_Usuario;
+    private MaterialSkin.Controls.MaterialTextBox TXTB_Usuario;
+    private PictureBox PIC_Password;
+    private MaterialSkin.Controls.MaterialTextBox TXTB_Password;
+    private MaterialSkin.Controls.MaterialLabel LBL_Password;
+    private MaterialSkin.Controls.MaterialSwitch SWCH_Password;
+    private MaterialSkin.Controls.MaterialButton BTN_Ingresar;
+    private MaterialSkin.Controls.MaterialButton BTN_Salir;
+    private PictureBox PIC_Logo;
+    private RoundedMaterialCard CARD_Login;
 }
