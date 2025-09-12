@@ -1,17 +1,33 @@
-﻿using System.ComponentModel;
-using MaterialSkin;
+﻿using MaterialSkin;
 using MaterialSkin.Controls;
 using PatitaSystem.Dominio.Auth;
-using System.Drawing.Drawing2D;
+using PatitaSystem.Dominio.Sesion;
 using PatitaSystem.Servicios;
+using PatitaSystem.Utilidades;
+using System.ComponentModel;
+using System.Drawing.Drawing2D;
+using System.Threading;
 
 namespace PatitaSystem;
 public partial class Login_Form : MaterialForm
 {
-    private readonly IAuthService _auth = default!; //variable privada que guarda el servicio de autenticación
+
+    // ------------------------------------------------------------
+    // Dependencias inyectadas 
+    // ------------------------------------------------------------
+
+    private readonly IAuthService _auth; //variable privada que guarda el servicio de autenticación
     //Permite que el formulario pueda llamar a la API para verificar usuario y contraseña usando el método LoginAsync.
 
-    private CancellationTokenSource? _cts; // controlar el tiempo de espera (timeout) de la operación de login
+    public readonly SesionActual _sesion; // Mantener la sesión actual del usuario autenticado
+
+    // ------------------------------------------------------------
+    // Estado interno para cancelar requests
+    // ------------------------------------------------------------
+
+    //La inicializo para evitar null en el primer uso.
+    private CancellationTokenSource _cts = new(); // controlar el tiempo de espera (timeout) de la operación de login
+
 
     //Evento que el ContextoPatita escuchara: 
     //Se dispara cuando el login fue exitoso, para avisar al resto de la aplicación
@@ -20,10 +36,19 @@ public partial class Login_Form : MaterialForm
     // 2) ***Constructor para RUNTIME (DI)***
     //Este es el que realmente se usa cuando la app corre.
     //Recibe el servicio de autenticación (IAuthService) por inyección de dependencias.
-    public Login_Form(IAuthService auth)
+
+    /// <summary>
+    /// Constructor: inyectamos SesionActual + AuthService desde DI.
+    /// </summary>
+    public Login_Form(IAuthService auth, SesionActual sesion)
     {
         _auth = auth ?? throw new ArgumentNullException(nameof(auth));
+        _sesion = sesion ?? throw new ArgumentNullException(nameof(sesion));
+
+
         InitializeComponent();     // todo el diseño lo hacés en el Designer
+
+
         if (!DesignMode)           // evita ejecutar skin en el diseñador de VS
         {
             ConfigurarMaterialSkin();
@@ -95,11 +120,9 @@ public partial class Login_Form : MaterialForm
     }
 
     // Sencarga de gestionar todo el proceso de login en el Formulario de Login
-    private async Task OnIngresarAsync() 
+    private async Task OnIngresarAsync() // El BTN_Ingresar 
     {
-        _cts?.Cancel(); // Si ya hay una operación de login en curso, la cancela.
-        _cts = new CancellationTokenSource(TimeSpan.FromSeconds(15)); // Timeout de 15 segundos
-
+        ReiniciarToken(15); // Reinicia el token de cancelación con un timeout de 15 segundos
 
         // Obtengo los input de usuario y password
         var user = TXTB_Usuario.Text.Trim(); // Saco los espacios al inicio y final
@@ -129,8 +152,17 @@ public partial class Login_Form : MaterialForm
                 Usuario = user,
                 Password = pass
             };
+            // VER SI LIMPIAR ACA DENUEVO
+            _cts?.Cancel(); // Si ya hay una operación de login en curso, la cancela.
+            _cts = new CancellationTokenSource(TimeSpan.FromSeconds(15)); // Timeout de 15 segundos
+
+            // ----------------------------------------------------------------------
+
             // Aca pasa la magia:
-            var result = await _auth.LoginAsync(req, _cts.Token); //Llama al servicio de autenticación de forma asíncrona y el resultado lo guarda en result
+            //var result = await _auth.LoginAsync(req, _cts.Token); //Llama al servicio de autenticación de forma asíncrona y el resultado lo guarda en result
+            // Llama al servicio de autenticación de forma asíncrona y el resultado lo guarda en result
+            // IMPORTANTE: el servicio devuelve Result<LoginResponse>
+            Result<LoginResponse> result = await _auth.LoginAsync(req, _cts.Token);
             if (!result.IsSuccess)
             {
                 MessageBox.Show(result.Error ?? "Error de autenticación.",
@@ -138,8 +170,24 @@ public partial class Login_Form : MaterialForm
                 return;
             }
 
-            // ✅ Listo: token guardado por el AuthService en ITokenStore
-            // (gracias al mapeo { user.token })
+            // ----------------------------------------------------------------------
+
+            // Desempaquetamos y mapeamos : loginResponse → UsuarioAtenticado
+            var loginResponse = result.Value!;
+            if (loginResponse is null || loginResponse.User is null)
+            {
+                MessageBox.Show("Respuesta inválida del servidor.",
+                    "Login fallido", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            // ----------------------------------------------------------------------
+
+            // Guardamos en sesión. importante : para el dashboard 
+            _sesion.Usuario = MapearAUsuarioAutenticado(loginResponse);
+
+
+            // ----------------------------------------------------------------------
+
             // Acá notificamos al ApplicationContext
             LoginSucceeded?.Invoke(this, EventArgs.Empty);
         }
@@ -156,10 +204,57 @@ public partial class Login_Form : MaterialForm
         finally
         {
             ToggleUi(true);
-            _cts = null;
         }
     }
-}
+
+    // Mapea LoginResponse (DTO) a UsuarioAutenticado (modelo de dominio)
+    /// <summary>
+    /// Convierte el DTO de respuesta del login (tal como llega de la API)
+    /// al modelo de dominio UsuarioAutenticado (usado en el resto de la app).
+    /// </summary>
+    private static UsuarioAutenticado MapearAUsuarioAutenticado(LoginResponse dto)
+    {
+        // Asumo tu estructura (según el JSON que pegaste):
+        // dto.user.id_usuario, dto.user.id_rol, dto.user.apellido_usuario, dto.user.nombre_usuario, dto.user.token
+        var u = dto.User!;
+
+        // ⚠️ Importante: los IDs de rol deben coincidir con tu BD actual.
+        // Según tu ejemplo: 1=Admin, 2=Cajera, 3=Estilista
+        return new UsuarioAutenticado
+        {
+            IdUsuario = u.IdUsuario,
+            IdRol = u.IdRol,
+            Usuario = u.Usuario,
+            NombreUsuario = u.NombreUsuario,
+            ApellidoUsuario = u.ApellidoUsuario,
+            Token = u.Token ?? string.Empty
+        };
+    }
+
+    // ---------------------------------------------------------------------
+    // Limpieza de recursos del formulario
+    // ---------------------------------------------------------------------
+    protected override void OnFormClosed(FormClosedEventArgs e)
+    {
+        base.OnFormClosed(e);
+        try { _cts?.Cancel(); } catch { /* ignorar */ }
+        _cts?.Dispose();
+    }
+
+
+    // ------------------------------------------------------------
+    // Utilidad: reiniciar token de cancelación de forma segura
+    // ------------------------------------------------------------
+    /// <summary>
+    /// Cancela y dispone el token previo (si lo hay) y crea uno nuevo con timeout.
+    /// </summary>
+    private void ReiniciarToken(int segundosTimeout)
+    {
+        try { _cts.Cancel(); } catch { /* ignorar si ya fue cancelado */ }
+        _cts.Dispose();
+        _cts = new CancellationTokenSource(TimeSpan.FromSeconds(segundosTimeout));
+    }
+
     public class RoundedMaterialCard : MaterialCard
     {
         protected override void OnPaint(PaintEventArgs e)
@@ -179,4 +274,13 @@ public partial class Login_Form : MaterialForm
             this.Region = new Region(path);
         }
     }
+
+}
+
+
+
+
+
+
+
 

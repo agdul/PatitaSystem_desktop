@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Windows.Forms;
+using PatitaSystem.Dominio.Sesion;
 using PatitaSystem.Infraestructura.Seguridad;
+using System.Windows.Forms;
 
 namespace PatitaSystem.Presentacion.App;
 
@@ -57,6 +58,7 @@ public sealed class ContextoPatita : ApplicationContext
     {
         try { 
            var dashboard = _provider.GetRequiredService<Dashboard_Form>();
+           dashboard.ConfigureWithSession(_provider.GetRequiredService<SesionActual>());
            dashboard.FormClosed += (_, __) => ExitThread();
            dashboard.Show();
         } 

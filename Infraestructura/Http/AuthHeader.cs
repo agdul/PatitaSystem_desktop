@@ -8,11 +8,11 @@ namespace PatitaSystem.Infraestructura.Http;
 /// DelegatingHandler que inyecta "Authorization: Bearer <token>" si hay token guardado.
 /// Se ejecuta ANTES de que el HttpClient envíe la solicitud.
 /// </summary>
-public sealed class AuthHeaderHandler : DelegatingHandler
+public sealed class AuthHeader : DelegatingHandler
 {
     private readonly ITokenStore _tokenStore;
 
-    public AuthHeaderHandler(ITokenStore tokenStore)
+    public AuthHeader(ITokenStore tokenStore)
     {
         _tokenStore = tokenStore;
     }

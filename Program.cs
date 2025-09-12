@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PatitaSystem.Infraestructura.Http;
-
 using PatitaSystem.Infraestructura.Seguridad;
 using PatitaSystem.Presentacion.App;
+using PatitaSystem.Dominio.Sesion;
 using PatitaSystem.Servicios;
 using System.Net.Http.Headers;
 
@@ -43,7 +43,7 @@ internal static class Program
 
         // ===== Infra =====
         services.AddSingleton<ITokenStore, TokenStore>();
-        services.AddTransient<AuthHeaderHandler>();
+        services.AddTransient<AuthHeader>();
 
         // ===== HttpClientes =====
         services.AddHttpClient("PatitaApiPublic", client =>
@@ -58,10 +58,11 @@ internal static class Program
             client.Timeout = TimeSpan.FromSeconds(15);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         })
-        .AddHttpMessageHandler<AuthHeaderHandler>();
+        .AddHttpMessageHandler<AuthHeader>();
 
         // ===== App (servicios) =====
         services.AddSingleton<IAuthService, AuthService>();
+        services.AddSingleton<SesionActual>(); // Singleton para mantener la sesión actual
 
         // ===== UI (forms) =====
         services.AddTransient<Login_Form>();
