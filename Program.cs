@@ -1,19 +1,77 @@
-using PatitaSystem;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using PatitaSystem.Infraestructura.Http;
+using PatitaSystem.Infraestructura.Seguridad;
+using PatitaSystem.Presentacion.App;
+using PatitaSystem.Dominio.Sesion;
+using PatitaSystem.Servicios;
+using System.Net.Http.Headers;
 
-namespace Presentacion
+namespace PatitaSystem;
+
+internal static class Program
 {
-    internal static class Program
+    [STAThread]
+    static void Main()
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
+        ApplicationConfiguration.Initialize(); // Siempre al inicio de Main
+
+
+        // ----------------------------------------
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+        Application.ThreadException += (s, ex) =>
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.Run(new Dashboard_Form());
-        }
+            MessageBox.Show(ex.Exception.ToString(), "ThreadException",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        };
+        AppDomain.CurrentDomain.UnhandledException += (s, ex) =>
+        {
+            MessageBox.Show(ex.ExceptionObject?.ToString() ?? "Error desconocido",
+                "UnhandledException", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        };
+        // ----------------------------------------
+
+
+        // Configuramos el contenedor de servicios
+        var config = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(config);
+
+        // ===== Infra =====
+        services.AddSingleton<ITokenStore, TokenStore>();
+        services.AddTransient<AuthHeader>();
+
+        // ===== HttpClientes =====
+        services.AddHttpClient("PatitaApiPublic", client =>
+        {
+            client.BaseAddress = new Uri(config["Api:BaseUrl"] ?? "http://localhost:3001/api/v1/");
+            client.Timeout = TimeSpan.FromSeconds(15);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        });
+        services.AddHttpClient("PatitaApiAuth", client =>
+        {
+            client.BaseAddress = new Uri(config["Api:BaseUrl"] ?? "http://localhost:3001/api/v1/");
+            client.Timeout = TimeSpan.FromSeconds(15);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        })
+        .AddHttpMessageHandler<AuthHeader>();
+
+        // ===== App (servicios) =====
+        services.AddSingleton<IAuthService, AuthService>();
+        services.AddSingleton<SesionActual>(); // Singleton para mantener la sesión actual
+
+        // ===== UI (forms) =====
+        services.AddTransient<Login_Form>();
+        services.AddTransient<Dashboard_Form>();
+
+
+        // Corremos la app con nuestro ApplicationContext
+        var provider = services.BuildServiceProvider();
+        Application.Run(new ContextoPatita((ServiceProvider)provider));
+
     }
 }

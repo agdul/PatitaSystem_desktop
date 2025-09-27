@@ -1,0 +1,23 @@
+﻿Flujo de datos
+
+Login_Form ➜ llama IAuthService.LoginAsync(req) ➜
+AuthService ➜ HttpClient("PatitaApiPublic") hace POST /auth/login ➜
+API devuelve JSON ➜ ReadFromJsonAsync<LoginResponse>() ➜
+AuthService guarda user.token en ITokenStore ➜
+Login_Form recibe Result<LoginResponse> ➜ si OK dispara LoginSucceeded ➜
+PatitaAppContext abre Dashboard.
+
+
+
+Documentacion Teorica C# .NET 8
+
+En C#, la expresión login.FormClosed += (_, __) => { ... },
+es una forma de suscribirse a un evento usando una función anónima (lambda).
+¿Qué significa?
+•	login.FormClosed: Es un evento que se dispara cuando el formulario login se cierra.
+•	+=: Indica que estás agregando (suscribiendo) un manejador al evento.
+•	(_, __) => { ... }: Es una función anónima (lambda) que se ejecutará cuando ocurra el evento.
+•	_ y __ son los parámetros del evento (el primero es el objeto que dispara el evento, el segundo son los datos del evento).
+•	Puedes llamarlos como quieras, pero se usan _ y __ cuando no necesitas esos valores.
+¿Para qué sirve?
+Sirve para ejecutar código automáticamente cuando ocurre el evento, por ejemplo, cerrar la aplicación, mostrar un mensaje, etc.
