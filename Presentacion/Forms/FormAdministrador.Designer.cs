@@ -49,11 +49,13 @@
             TAB_Reporte = new TabPage();
             drawerMenu = new MaterialSkin.Controls.MaterialDrawer();
             PIC_Logo = new PictureBox();
+            panel1 = new Panel();
             TABS_MenuAdmin.SuspendLayout();
             TAB_Usuario.SuspendLayout();
             TAB_Turno.SuspendLayout();
             TAB_Producto.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)PIC_Logo).BeginInit();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // TABS_MenuAdmin
@@ -183,7 +185,6 @@
             TAB_Turno.Size = new Size(511, 401);
             TAB_Turno.TabIndex = 1;
             TAB_Turno.Text = "Turnos";
-
             // 
             // BTN_ModificarTurno
             // 
@@ -282,7 +283,6 @@
             TAB_Producto.TabIndex = 2;
             TAB_Producto.Text = "Productos";
             TAB_Producto.UseVisualStyleBackColor = true;
-
             // 
             // BTN_ModificarProducto
             // 
@@ -361,7 +361,6 @@
             ListViewProducto.TabIndex = 0;
             ListViewProducto.UseCompatibleStateImageBehavior = false;
             ListViewProducto.View = View.Details;
-
             // 
             // TAB_Mascota
             // 
@@ -395,36 +394,44 @@
             drawerMenu.HighlightWithAccent = true;
             drawerMenu.IndicatorWidth = 0;
             drawerMenu.IsOpen = true;
-            drawerMenu.Location = new Point(0, 34);
+            drawerMenu.Location = new Point(0, 40);
             drawerMenu.Margin = new Padding(3, 2, 3, 2);
             drawerMenu.MouseState = MaterialSkin.MouseState.HOVER;
             drawerMenu.Name = "drawerMenu";
             drawerMenu.ShowIconsWhenHidden = false;
-            drawerMenu.Size = new Size(273, 429);
+            drawerMenu.Size = new Size(159, 286);
             drawerMenu.TabIndex = 4;
             drawerMenu.Text = "materialDrawer1";
             drawerMenu.UseColors = false;
-
             // 
             // PIC_Logo
             // 
             PIC_Logo.Image = Properties.Resources.logo2;
-            PIC_Logo.Location = new Point(27, 348);
+            PIC_Logo.Location = new Point(15, 355);
             PIC_Logo.Margin = new Padding(3, 2, 3, 2);
             PIC_Logo.Name = "PIC_Logo";
-            PIC_Logo.Size = new Size(228, 99);
+            PIC_Logo.Size = new Size(132, 111);
             PIC_Logo.SizeMode = PictureBoxSizeMode.Zoom;
             PIC_Logo.TabIndex = 5;
             PIC_Logo.TabStop = false;
-
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(PIC_Logo);
+            panel1.Controls.Add(drawerMenu);
+            panel1.Dock = DockStyle.Left;
+            panel1.Location = new Point(3, 18);
+            panel1.Margin = new Padding(65);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(200, 489);
+            panel1.TabIndex = 6;
             // 
             // FormAdministrador
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(832, 509);
-            Controls.Add(PIC_Logo);
-            Controls.Add(drawerMenu);
+            Controls.Add(panel1);
             Controls.Add(TABS_MenuAdmin);
             FormStyle = FormStyles.ActionBar_None;
             Margin = new Padding(3, 2, 3, 2);
@@ -438,6 +445,7 @@
             TAB_Producto.ResumeLayout(false);
             TAB_Producto.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)PIC_Logo).EndInit();
+            panel1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -463,5 +471,6 @@
         private TabPage TAB_Reporte;
         private PictureBox PIC_Logo;
         private MaterialSkin.Controls.MaterialListView LIS_Usuario;
+        private Panel panel1;
     }
 }

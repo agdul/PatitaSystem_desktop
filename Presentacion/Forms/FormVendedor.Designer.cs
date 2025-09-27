@@ -33,7 +33,7 @@ namespace PatitaSystem.Presentacion.Forms
         {
             materialTabVendedor = new MaterialSkin.Controls.MaterialTabControl();
             tabPage1 = new TabPage();
-            listViewVendedor1 = new MaterialSkin.Controls.MaterialListView();
+            LIS_Vendedor = new MaterialSkin.Controls.MaterialListView();
             materialButton1 = new MaterialSkin.Controls.MaterialButton();
             tabPage2 = new TabPage();
             materialButton3 = new MaterialSkin.Controls.MaterialButton();
@@ -63,7 +63,7 @@ namespace PatitaSystem.Presentacion.Forms
             // 
             // tabPage1
             // 
-            tabPage1.Controls.Add(listViewVendedor1);
+            tabPage1.Controls.Add(LIS_Vendedor);
             tabPage1.Controls.Add(materialButton1);
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
@@ -73,23 +73,23 @@ namespace PatitaSystem.Presentacion.Forms
             tabPage1.Text = "Productos";
             tabPage1.UseVisualStyleBackColor = true;
             // 
-            // listViewVendedor1
+            // LIS_Vendedor
             // 
-            listViewVendedor1.AutoSizeTable = false;
-            listViewVendedor1.BackColor = Color.FromArgb(255, 255, 255);
-            listViewVendedor1.BorderStyle = BorderStyle.None;
-            listViewVendedor1.Depth = 0;
-            listViewVendedor1.FullRowSelect = true;
-            listViewVendedor1.Location = new Point(16, 27);
-            listViewVendedor1.MinimumSize = new Size(200, 100);
-            listViewVendedor1.MouseLocation = new Point(-1, -1);
-            listViewVendedor1.MouseState = MaterialSkin.MouseState.OUT;
-            listViewVendedor1.Name = "listViewVendedor1";
-            listViewVendedor1.OwnerDraw = true;
-            listViewVendedor1.Size = new Size(511, 162);
-            listViewVendedor1.TabIndex = 1;
-            listViewVendedor1.UseCompatibleStateImageBehavior = false;
-            listViewVendedor1.View = View.Details;
+            LIS_Vendedor.AutoSizeTable = false;
+            LIS_Vendedor.BackColor = Color.FromArgb(255, 255, 255);
+            LIS_Vendedor.BorderStyle = BorderStyle.None;
+            LIS_Vendedor.Depth = 0;
+            LIS_Vendedor.FullRowSelect = true;
+            LIS_Vendedor.Location = new Point(16, 27);
+            LIS_Vendedor.MinimumSize = new Size(200, 100);
+            LIS_Vendedor.MouseLocation = new Point(-1, -1);
+            LIS_Vendedor.MouseState = MaterialSkin.MouseState.OUT;
+            LIS_Vendedor.Name = "LIS_Vendedor";
+            LIS_Vendedor.OwnerDraw = true;
+            LIS_Vendedor.Size = new Size(511, 162);
+            LIS_Vendedor.TabIndex = 1;
+            LIS_Vendedor.UseCompatibleStateImageBehavior = false;
+            LIS_Vendedor.View = View.Details;
             // 
             // materialButton1
             // 
@@ -109,7 +109,7 @@ namespace PatitaSystem.Presentacion.Forms
             materialButton1.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             materialButton1.UseAccentColor = false;
             materialButton1.UseVisualStyleBackColor = true;
-            materialButton1.Click += materialButton1_Click;
+
             // 
             // tabPage2
             // 
@@ -245,7 +245,7 @@ namespace PatitaSystem.Presentacion.Forms
         private MaterialSkin.Controls.MaterialButton materialButton1;
         private TabPage tabPage2;
         private TabPage tabPage3;
-        private MaterialSkin.Controls.MaterialListView listViewVendedor1;
+        private MaterialSkin.Controls.MaterialListView LIS_Vendedor;
         private MaterialSkin.Controls.MaterialButton materialButton3;
         private MaterialSkin.Controls.MaterialButton materialButton2;
         private MaterialSkin.Controls.MaterialListView listViewPelu;

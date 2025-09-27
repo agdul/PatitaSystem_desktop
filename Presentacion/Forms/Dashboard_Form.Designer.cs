@@ -46,10 +46,10 @@ partial class Dashboard_Form : MaterialForm
         TAB_PatitaAdmin = new TabPage();
         materialCard2 = new MaterialCard();
         tableLayoutPanel1 = new TableLayoutPanel();
-        materialFloatingActionButton1 = new MaterialFloatingActionButton();
+        BTN_Reportes = new MaterialFloatingActionButton();
         LBL_Menu = new MaterialLabel();
         BTN_AdminMenu = new MaterialFloatingActionButton();
-        materialLabel2 = new MaterialLabel();
+        LBL_Reportes = new MaterialLabel();
         BTN_Menu = new MaterialButton();
         PIC_Logo = new PictureBox();
         TABS_MenuPatita.SuspendLayout();
@@ -342,10 +342,10 @@ partial class Dashboard_Form : MaterialForm
         tableLayoutPanel1.ColumnCount = 2;
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-        tableLayoutPanel1.Controls.Add(materialFloatingActionButton1, 1, 0);
+        tableLayoutPanel1.Controls.Add(BTN_Reportes, 1, 0);
         tableLayoutPanel1.Controls.Add(LBL_Menu, 0, 1);
         tableLayoutPanel1.Controls.Add(BTN_AdminMenu, 0, 0);
-        tableLayoutPanel1.Controls.Add(materialLabel2, 1, 1);
+        tableLayoutPanel1.Controls.Add(LBL_Reportes, 1, 1);
         tableLayoutPanel1.Dock = DockStyle.Fill;
         tableLayoutPanel1.Location = new Point(20, 20);
         tableLayoutPanel1.Margin = new Padding(0);
@@ -356,20 +356,20 @@ partial class Dashboard_Form : MaterialForm
         tableLayoutPanel1.Size = new Size(311, 178);
         tableLayoutPanel1.TabIndex = 0;
         // 
-        // materialFloatingActionButton1
+        // BTN_Reportes
         // 
-        materialFloatingActionButton1.Anchor = AnchorStyles.Bottom;
-        materialFloatingActionButton1.BackColor = Color.Transparent;
-        materialFloatingActionButton1.Depth = 0;
-        materialFloatingActionButton1.Icon = Properties.Resources.icon_dog;
-        materialFloatingActionButton1.Location = new Point(203, 22);
-        materialFloatingActionButton1.MouseState = MouseState.HOVER;
-        materialFloatingActionButton1.Name = "materialFloatingActionButton1";
-        materialFloatingActionButton1.Size = new Size(59, 56);
-        materialFloatingActionButton1.TabIndex = 2;
-        materialFloatingActionButton1.Text = "Mascotas";
-        materialFloatingActionButton1.UseCompatibleTextRendering = true;
-        materialFloatingActionButton1.UseVisualStyleBackColor = false;
+        BTN_Reportes.Anchor = AnchorStyles.Bottom;
+        BTN_Reportes.BackColor = Color.Transparent;
+        BTN_Reportes.Depth = 0;
+        BTN_Reportes.Icon = Properties.Resources.icon_dog;
+        BTN_Reportes.Location = new Point(203, 22);
+        BTN_Reportes.MouseState = MouseState.HOVER;
+        BTN_Reportes.Name = "BTN_Reportes";
+        BTN_Reportes.Size = new Size(59, 56);
+        BTN_Reportes.TabIndex = 2;
+        BTN_Reportes.Text = "Mascotas";
+        BTN_Reportes.UseCompatibleTextRendering = true;
+        BTN_Reportes.UseVisualStyleBackColor = false;
         // 
         // LBL_Menu
         // 
@@ -401,19 +401,19 @@ partial class Dashboard_Form : MaterialForm
         BTN_AdminMenu.UseVisualStyleBackColor = false;
         BTN_AdminMenu.Click += BTN_AdminMenu_Click;
         // 
-        // materialLabel2
+        // LBL_Reportes
         // 
-        materialLabel2.Anchor = AnchorStyles.Top;
-        materialLabel2.Depth = 0;
-        materialLabel2.Font = new Font("Roboto Medium", 14F, FontStyle.Bold, GraphicsUnit.Pixel);
-        materialLabel2.FontType = MaterialSkinManager.fontType.Subtitle2;
-        materialLabel2.Location = new Point(186, 81);
-        materialLabel2.MouseState = MouseState.HOVER;
-        materialLabel2.Name = "materialLabel2";
-        materialLabel2.Size = new Size(94, 39);
-        materialLabel2.TabIndex = 3;
-        materialLabel2.Text = "Mascotas";
-        materialLabel2.TextAlign = ContentAlignment.TopCenter;
+        LBL_Reportes.Anchor = AnchorStyles.Top;
+        LBL_Reportes.Depth = 0;
+        LBL_Reportes.Font = new Font("Roboto Medium", 14F, FontStyle.Bold, GraphicsUnit.Pixel);
+        LBL_Reportes.FontType = MaterialSkinManager.fontType.Subtitle2;
+        LBL_Reportes.Location = new Point(186, 81);
+        LBL_Reportes.MouseState = MouseState.HOVER;
+        LBL_Reportes.Name = "LBL_Reportes";
+        LBL_Reportes.Size = new Size(94, 39);
+        LBL_Reportes.TabIndex = 3;
+        LBL_Reportes.Text = "Reportes";
+        LBL_Reportes.TextAlign = ContentAlignment.TopCenter;
         // 
         // BTN_Menu
         // 
@@ -494,8 +494,8 @@ partial class Dashboard_Form : MaterialForm
     private TabPage TAB_PatitaAdmin;
     private MaterialCard materialCard2;
     private TableLayoutPanel tableLayoutPanel1;
-    private MaterialFloatingActionButton materialFloatingActionButton1;
+    private MaterialFloatingActionButton BTN_Reportes;
     private MaterialLabel LBL_Menu;
     private MaterialFloatingActionButton BTN_AdminMenu;
-    private MaterialLabel materialLabel2;
+    private MaterialLabel LBL_Reportes;
 }

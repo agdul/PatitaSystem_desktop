@@ -27,8 +27,8 @@ namespace PatitaSystem.Presentacion.Forms
             skinManager.AddFormToManage(this);
             skinManager.Theme = MaterialSkinManager.Themes.DARK; // o LIGTH
             skinManager.ColorScheme = new ColorScheme(
-                Primary.Blue600, Primary.Blue700, Primary.Blue200,
-                Accent.LightBlue200, TextShade.WHITE
+               Primary.Teal700, Primary.Teal900, Primary.Teal500,
+                Accent.Green200, TextShade.WHITE
             );
 
             // Conectar el Drawer con el TabControl
@@ -46,14 +46,14 @@ namespace PatitaSystem.Presentacion.Forms
             //listViewVendedor1.GridLines = true;
 
             // Definir columnas
-            listViewVendedor1.Columns.Add("ID", 50);
-            listViewVendedor1.Columns.Add("Nombre Producto", 150);
-            listViewVendedor1.Columns.Add("Stock", 175);
-            listViewVendedor1.Columns.Add("Descripción", 170);
+            LIS_Vendedor.Columns.Add("ID", 50);
+            LIS_Vendedor.Columns.Add("Nombre Producto", 150);
+            LIS_Vendedor.Columns.Add("Stock", 175);
+            LIS_Vendedor.Columns.Add("Descripción", 170);
 
             // Agregar usuarios de ejemplo
-            listViewVendedor1.Items.Add(new ListViewItem(new[] { "1", "Alimento", "25", "" }));
-            listViewVendedor1.Items.Add(new ListViewItem(new[] { "2", "Sogas", "15", "" }));
+            LIS_Vendedor.Items.Add(new ListViewItem(new[] { "1", "Alimento", "25", "" }));
+            LIS_Vendedor.Items.Add(new ListViewItem(new[] { "2", "Sogas", "15", "" }));
 
             //Definir columnas
             listViewPelu.Columns.Add("ID", 50);
@@ -91,32 +91,32 @@ namespace PatitaSystem.Presentacion.Forms
 
         }
 
-        private void materialButton1_Click(object sender, EventArgs e)
-        {
-            if (listViewVendedor1.SelectedItems.Count > 0)
-            {
-                var item = listViewVendedor1.SelectedItems[0];
+        //private void materialButton1_Click(object sender, EventArgs e)
+        //{
+        //    if (LIS_Vendedor.SelectedItems.Count > 0)
+        //    {
+        //        var item = LIS_Vendedor.SelectedItems[0];
 
-                string id = item.SubItems[0].Text;
-                string producto = item.SubItems[1].Text;
-                string descripcion = item.SubItems[2].Text;
+        //        string id = item.SubItems[0].Text;
+        //        string producto = item.SubItems[1].Text;
+        //        string descripcion = item.SubItems[2].Text;
 
-                // Abrís un formulario de edición con esos datos
-                FormEditarProducto frm = new FormEditarProducto(listViewVendedor1);
-                if (frm.ShowDialog() == DialogResult.OK)
-                {
-                    // Si el usuario guardó cambios, actualizamos la fila
-                    //item.SubItems[1].Text = frm.producto;
-                    //item.SubItems[2].Text = frm.Stock;
-                }
-            }
-            else
-            {
-                MessageBox.Show("Seleccioná un producto primero.");
-            }
+        //         Abrís un formulario de edición con esos datos
+        //        FormRegistrarProducto frm = new FormRegistrarProducto();
+        //        if (frm.ShowDialog() == DialogResult.OK)
+        //        {
+        //             Si el usuario guardó cambios, actualizamos la fila
+        //            item.SubItems[1].Text = frm.producto;
+        //            item.SubItems[2].Text = frm.Stock;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Seleccioná un producto primero.");
+        //    }
 
 
-        }
+        //}
 
         private void materialLabel1_Click(object sender, EventArgs e)
         {
