@@ -1,12 +1,13 @@
-﻿
+﻿// Archivo: Infraestructura/Http/AuthHeader.cs
 using PatitaSystem.Infraestructura.Seguridad;
 using System.Net.Http.Headers;
 
 namespace PatitaSystem.Infraestructura.Http;
 
 /// <summary>
-/// DelegatingHandler que inyecta "Authorization: Bearer <token>" si hay token guardado.
-/// Se ejecuta ANTES de que el HttpClient envíe la solicitud.
+/// Inyecta encabezados de autenticación antes de enviar la request:
+/// - Authorization: Bearer &lt;token&gt;
+/// - info: &lt;token&gt;  (compat con APIs que lo esperan en este header)
 /// </summary>
 public sealed class AuthHeader : DelegatingHandler
 {
@@ -14,30 +15,25 @@ public sealed class AuthHeader : DelegatingHandler
 
     public AuthHeader(ITokenStore tokenStore)
     {
-        _tokenStore = tokenStore;
+        _tokenStore = tokenStore ?? throw new ArgumentNullException(nameof(tokenStore));
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        // Si ya existe el header (por algún caso especial), respetamos y no lo duplicamos.
-        if (!request.Headers.Contains("Authorization"))
+        var token = await _tokenStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+
+        if (!string.IsNullOrWhiteSpace(token))
         {
-            var token = await _tokenStore.LoadAsync(cancellationToken);
-            if (!string.IsNullOrWhiteSpace(token))
-            {
+            if (!request.Headers.Contains("Authorization"))
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!request.Headers.Contains("info"))
+                request.Headers.TryAddWithoutValidation("info", token);
         }
 
-        var response = await base.SendAsync(request, cancellationToken);
+        if (!request.Headers.Accept.Any(h => h.MediaType == "application/json"))
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-        // (Opcional) Si recibís 401, podrías limpiar token y/o redirigir a Login.
-        // if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-        // {
-        //     _tokenStore.Clear();
-        //     // Notificar a la UI: "Sesión expirada" → volver a login
-        // }
-
-        return response;
+        return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
     }
 }
