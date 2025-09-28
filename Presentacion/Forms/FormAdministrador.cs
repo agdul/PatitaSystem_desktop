@@ -33,6 +33,10 @@ namespace PatitaSystem.Presentacion.Forms
         private Panel? _drawerHost;
         private int _drawerWidthBackup = 0;
 
+        // === BUSCADOR: estado y debounce ===
+        private System.Windows.Forms.Timer? _buscadorTmr;
+        private List<UsuarioListadoDto> _usuariosCache = new(); // ajustá el tipo exacto si difiere
+
 
         /// <summary>
         /// Si true, el formulario opera mostrando solo la pestaña de Productos.
@@ -99,6 +103,27 @@ namespace PatitaSystem.Presentacion.Forms
 
             this.Load -= FormAdministrador_LoadAsync;
             this.Load += FormAdministrador_LoadAsync;
+
+
+            // Buscador: timer para debounce (para no filtrar en cada tecla)
+            _buscadorTmr = new System.Windows.Forms.Timer { Interval = 150 };
+            _buscadorTmr.Tick += (_, __) =>
+            {
+                _buscadorTmr!.Stop();
+                AplicarFiltroUsuarios(TXT_BuscarUsuario?.Text ?? string.Empty);
+            };
+
+            // Handlers de UI
+            if (TXT_BuscarUsuario != null)
+            {
+                TXT_BuscarUsuario.TextChanged -= TXT_BuscarUsuario_TextChanged;
+                TXT_BuscarUsuario.TextChanged += TXT_BuscarUsuario_TextChanged;
+            }
+            if (BTN_LimpiarBusqueda != null)
+            {
+                BTN_LimpiarBusqueda.Click -= BTN_LimpiarBusqueda_Click;
+                BTN_LimpiarBusqueda.Click += BTN_LimpiarBusqueda_Click;
+            }
         }
 
         /// <summary>
@@ -206,29 +231,11 @@ namespace PatitaSystem.Presentacion.Forms
                 using var cts = new CancellationTokenSource(System.TimeSpan.FromSeconds(20));
                 var usuarios = await _usuarioApi.GetUsuariosAsync(cts.Token);
 
-                LIS_Usuario.BeginUpdate();
-                LIS_Usuario.Items.Clear();
+                // Cacheamos TODO el listado original
+                _usuariosCache = usuarios.ToList();
 
-                foreach (var u in usuarios)
-                {
-                    var nombreParaMostrar = !string.IsNullOrWhiteSpace(u.Usuario)
-                        ? u.Usuario
-                        : $"{u.Nombre} {u.Apellido}".Trim();
-
-                    var item = new ListViewItem(new[]
-                    {
-                        u.IdUsuario.ToString(),
-                        nombreParaMostrar,
-                        u.Email ?? "",
-                        u.Celular ?? "",
-                        u.EstadoUsuario ? "Activo" : "Inactivo",
-                        u.Password ?? "" // Mostrar password nunca es buena práctica; solo para testing.
-                    });
-
-                    LIS_Usuario.Items.Add(item);
-                }
-
-                LIS_Usuario.EndUpdate();
+                // Pintamos a partir de la cache (no hagas otro loop aparte)
+                RenderUsuarios(_usuariosCache);
             }
             catch (TaskCanceledException)
             {
@@ -385,25 +392,25 @@ namespace PatitaSystem.Presentacion.Forms
         // =========================
         private void ConfigurarListaProductos()
         {
-            if (ListViewProducto.View != View.Details)
-                ListViewProducto.View = View.Details;
+            if (LIST_Producto.View != View.Details)
+                LIST_Producto.View = View.Details;
 
-            ListViewProducto.FullRowSelect = true;
-            ListViewProducto.GridLines = true;
+            LIST_Producto.FullRowSelect = true;
+            LIST_Producto.GridLines = true;
 
-            if (ListViewProducto.Columns.Count == 0)
+            if (LIST_Producto.Columns.Count == 0)
             {
-                ListViewProducto.Columns.Add("ID", 50);
-                ListViewProducto.Columns.Add("Producto", 150);
-                ListViewProducto.Columns.Add("Stock", 175);
+                LIST_Producto.Columns.Add("ID", 50);
+                LIST_Producto.Columns.Add("Producto", 150);
+                LIST_Producto.Columns.Add("Stock", 175);
             }
         }
 
         private void materialButton7_Click(object sender, System.EventArgs e)
         {
-            if (ListViewProducto.SelectedItems.Count > 0)
+            if (LIST_Producto.SelectedItems.Count > 0)
             {
-                var item = ListViewProducto.SelectedItems[0];
+                var item = LIST_Producto.SelectedItems[0];
                 string producto = item.SubItems[1].Text;
 
                 var confirm = MessageBox.Show(
@@ -415,7 +422,7 @@ namespace PatitaSystem.Presentacion.Forms
                 if (confirm == DialogResult.Yes)
                 {
                     // TODO: DELETE real cuando tengas endpoint
-                    ListViewProducto.Items.Remove(item);
+                    LIST_Producto.Items.Remove(item);
                 }
             }
             else
@@ -426,9 +433,9 @@ namespace PatitaSystem.Presentacion.Forms
 
         private void materialButton9_Click(object sender, System.EventArgs e)
         {
-            if (ListViewProducto.SelectedItems.Count > 0)
+            if (LIST_Producto.SelectedItems.Count > 0)
             {
-                var frm = new FormEditarProducto(ListViewProducto);
+                var frm = new FormEditarProducto(LIST_Producto);
                 frm.ShowDialog();
             }
             else
@@ -554,8 +561,6 @@ namespace PatitaSystem.Presentacion.Forms
         }
 
 
-
-
         /// <summary>
         /// Restaura todas las TabPages al orden original (sale del modo restricción).
         /// </summary>
@@ -592,7 +597,6 @@ namespace PatitaSystem.Presentacion.Forms
             // 3) Reacoplar Drawer
             FinalizarActualizacionSeguraDelDrawer();
         }
-
 
 
         private void ComenzarActualizacionSeguraDelDrawer()
@@ -644,6 +648,91 @@ namespace PatitaSystem.Presentacion.Forms
             BeginInvoke(new MethodInvoker(FinalizarActualizacionSeguraDelDrawer));
         }
 
+
+        /// <summary>
+        /// Rellena el ListView 'LIS_Usuario' con la lista entregada (full o filtrada).
+        /// </summary>
+        private void RenderUsuarios(IEnumerable<UsuarioListadoDto> lista)
+        {
+            LIS_Usuario.BeginUpdate();
+            LIS_Usuario.Items.Clear();
+
+            foreach (var u in lista)
+            {
+                var nombreParaMostrar = !string.IsNullOrWhiteSpace(u.Usuario)
+                    ? u.Usuario
+                    : $"{u.Nombre} {u.Apellido}".Trim();
+
+                var item = new ListViewItem(new[]
+                {
+            u.IdUsuario.ToString(),
+            nombreParaMostrar,
+            u.Email ?? "",
+            u.Celular ?? "",
+            u.EstadoUsuario ? "Activo" : "Inactivo",
+            u.Password ?? "" // (solo para test; en prod no mostrar)
+        });
+
+                LIS_Usuario.Items.Add(item);
+            }
+
+            LIS_Usuario.EndUpdate();
+        }
+
+        /// <summary>
+        /// Aplica el filtro sobre la cache local (_usuariosCache) y re-renderiza.
+        /// </summary>
+        private void AplicarFiltroUsuarios(string query)
+        {
+            if (_usuariosCache is null || _usuariosCache.Count == 0)
+            {
+                LIS_Usuario.Items.Clear();
+                return;
+            }
+
+            query = (query ?? string.Empty).Trim();
+
+            if (query.Length == 0)
+            {
+                RenderUsuarios(_usuariosCache);
+                return;
+            }
+
+            // Coincidencia flexible: usuario, nombre+apellido y email
+            var filtrados = _usuariosCache.Where(u =>
+            {
+                string usuario = u.Usuario ?? "";
+                string nombre = u.Nombre ?? "";
+                string apellido = u.Apellido ?? "";
+                string email = u.Email ?? "";
+                string nombreCompleto = $"{nombre} {apellido}".Trim();
+
+                return usuario.Contains(query, StringComparison.OrdinalIgnoreCase)
+                    || nombreCompleto.Contains(query, StringComparison.OrdinalIgnoreCase)
+                    || email.Contains(query, StringComparison.OrdinalIgnoreCase);
+            }).ToList();
+
+            RenderUsuarios(filtrados);
+        }
+
+        // === Handlers del buscador ===
+        private void TXT_BuscarUsuario_TextChanged(object? sender, EventArgs e)
+        {
+            _buscadorTmr?.Stop();
+            _buscadorTmr?.Start(); // debounce 150ms
+        }
+
+        private void BTN_LimpiarBusqueda_Click(object? sender, EventArgs e)
+        {
+            if (TXT_BuscarUsuario is null) return;
+
+            // Evitar doble disparo de TextChanged
+            TXT_BuscarUsuario.TextChanged -= TXT_BuscarUsuario_TextChanged;
+            TXT_BuscarUsuario.Text = string.Empty;
+            TXT_BuscarUsuario.TextChanged += TXT_BuscarUsuario_TextChanged;
+
+            AplicarFiltroUsuarios(string.Empty);
+        }
 
     }
 }
