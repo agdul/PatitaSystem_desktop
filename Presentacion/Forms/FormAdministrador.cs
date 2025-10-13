@@ -48,6 +48,7 @@ namespace PatitaSystem.Presentacion.Forms
         //  API Usuarios (ya tenías)
         // =========================
         private readonly UsuarioApiClient _usuarioApi;
+        private readonly DireccionApiClient _direccionApi;
 
         // Una sola instancia para el modal de registro
         private FormRegistrarUsuario? _frmRegistrarUsuario;
@@ -93,6 +94,7 @@ namespace PatitaSystem.Presentacion.Forms
             http.DefaultRequestHeaders.UserAgent.ParseAdd("PatitaSystem-Desktop");
 
             _usuarioApi = new UsuarioApiClient(http);
+            _direccionApi = new DireccionApiClient(http);
 
             // -----------------------------------------
             // Config columnas + carga real al mostrar UI
@@ -167,9 +169,6 @@ namespace PatitaSystem.Presentacion.Forms
 
 
 
-
-
-
         /// <summary>
         /// Al mostrarse el formulario: indexa tabs, sincroniza el Drawer y aplica la restricción si corresponde.
         /// </summary>
@@ -207,11 +206,12 @@ namespace PatitaSystem.Presentacion.Forms
             if (LIS_Usuario.Columns.Count == 0)
             {
                 LIS_Usuario.Columns.Add("ID", 60);
+                LIS_Usuario.Columns.Add("Nombre", 150);
+                LIS_Usuario.Columns.Add("Apellido", 150);
                 LIS_Usuario.Columns.Add("Usuario", 150);
-                LIS_Usuario.Columns.Add("Email", 190);
-                LIS_Usuario.Columns.Add("Celular", 130);
-                LIS_Usuario.Columns.Add("Estado", 130);
-                LIS_Usuario.Columns.Add("Password", 150);
+                LIS_Usuario.Columns.Add("Email", 210);
+                LIS_Usuario.Columns.Add("Celular", 170);
+                LIS_Usuario.Columns.Add("Estado", 90);
             }
 
             LIS_Usuario.Items.Clear();
@@ -275,8 +275,8 @@ namespace PatitaSystem.Presentacion.Forms
             try
             {
                 _frmRegistrarUsuario = (usuarioParaEditar is null)
-                    ? new FormRegistrarUsuario(_usuarioApi)
-                    : new FormRegistrarUsuario(_usuarioApi, usuarioParaEditar);
+                    ? new FormRegistrarUsuario(_usuarioApi, _direccionApi)
+                    : new FormRegistrarUsuario(_usuarioApi, _direccionApi, usuarioParaEditar);
 
                 _frmRegistrarUsuario.FormClosed += (_, __) => _frmRegistrarUsuario = null;
 
@@ -665,15 +665,15 @@ namespace PatitaSystem.Presentacion.Forms
 
                 var item = new ListViewItem(new[]
                 {
-            u.IdUsuario.ToString(),
-            nombreParaMostrar,
-            u.Email ?? "",
-            u.Celular ?? "",
-            u.EstadoUsuario ? "Activo" : "Inactivo",
-            u.Password ?? "" // (solo para test; en prod no mostrar)
-        });
+                     u.IdUsuario.ToString(),
+                     u.Nombre ?? "",
+                     u.Apellido ?? "",
+                     u.Usuario ?? "",
+                     u.Email ?? "",
+                     u.Celular ?? "",
+                     u.EstadoUsuario ? "Activo" : "Inactivo",
+                }); LIS_Usuario.Items.Add(item);
 
-                LIS_Usuario.Items.Add(item);
             }
 
             LIS_Usuario.EndUpdate();

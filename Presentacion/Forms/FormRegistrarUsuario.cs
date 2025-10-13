@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using MaterialSkin;
 using MaterialSkin.Controls;
 using PatitaSystem.Dominio.Usuarios;   // DTOs (UsuarioCreateRequest, UsuarioUpdateRequest, UsuarioDetalleDto)
+using PatitaSystem.Dominio.Direccion; // DTOs (DireccionCreateRequest)
 using PatitaSystem.Infraestructura.Http; // UsuarioApiClient
 
 namespace PatitaSystem.Presentacion.Forms
@@ -19,6 +20,7 @@ namespace PatitaSystem.Presentacion.Forms
     public partial class FormRegistrarUsuario : MaterialForm
     {
         private readonly UsuarioApiClient? _usuarioApi; // Inyectado desde FormAdministrador
+        private readonly DireccionApiClient? _direccionApi; // Inyectado desde FormAdministrador
         private readonly int? _usuarioId;               // null = crear, valor = editar
 
         // ==== Constructor para el diseñador ====
@@ -35,24 +37,27 @@ namespace PatitaSystem.Presentacion.Forms
             );
 
             InicializarComboRoles();
+            InicializarComboGeneros();
         }
 
-        // ==== Constructor: CREAR ====
-        public FormRegistrarUsuario(UsuarioApiClient usuarioApi) : this()
+        // ==== Constructor: CREAR (inyecta Usuario + Direccion) ====
+        public FormRegistrarUsuario(UsuarioApiClient usuarioApi, DireccionApiClient direccionApi) : this()
         {
             _usuarioApi = usuarioApi ?? throw new ArgumentNullException(nameof(usuarioApi));
+            _direccionApi = direccionApi ?? throw new ArgumentNullException(nameof(direccionApi));
+
             Text = "Crear usuario";
             BTN_GuardarUsuario.Text = "Crear usuario";
         }
 
-        // ==== Constructor: EDITAR (prellenamos con detalle) ====
-        public FormRegistrarUsuario(UsuarioApiClient usuarioApi, FormAdministrador.Usuario usuario) : this(usuarioApi)
+        // ==== Constructor: EDITAR (inyecta ambos y prellena) ====
+        public FormRegistrarUsuario(UsuarioApiClient usuarioApi, DireccionApiClient direccionApi, FormAdministrador.Usuario usuario)
+            : this(usuarioApi, direccionApi)   // <<<<< FIX: encadenar al ctor correcto
         {
             _usuarioId = int.TryParse(usuario.Id, out var idVal) ? idVal : null;
             Text = "Editar usuario";
             BTN_GuardarUsuario.Text = "Guardar cambios";
 
-            // Al mostrarse el form, traemos el detalle del usuario
             this.Shown -= FormRegistrarUsuario_Shown;
             this.Shown += FormRegistrarUsuario_Shown;
         }
@@ -116,10 +121,10 @@ namespace PatitaSystem.Presentacion.Forms
                     "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        // ========================
-        //  UI helpers / validación
-        // ========================
+        // ------------------------------------------------------------------------------------
+        // =================================
+        //  Inicialización de boxs combos
+        // =================================
 
         private void InicializarComboRoles()
         {
@@ -133,6 +138,23 @@ namespace PatitaSystem.Presentacion.Forms
             }
         }
 
+        private void InicializarComboGeneros()
+        {
+            if (MCB_Genero.Items.Count == 0)
+            {
+                MCB_Genero.Items.Add("Masculino");
+                MCB_Genero.Items.Add("Femenino");
+                MCB_Genero.Items.Add("Otro");
+                MCB_Genero.StartIndex = 0; // por defecto Masculino
+            }
+        }
+
+        // ------------------------------------------------------------------------------------
+
+        // ------------------------------------------------------------------------------------
+        //                     Helperes
+        // ------------------------------------------------------------------------------------
+
         private int ObtenerIdRol() => MCB_Rol.SelectedIndex switch
         {
             0 => 1, // Administrador
@@ -140,6 +162,17 @@ namespace PatitaSystem.Presentacion.Forms
             2 => 3, // Estilista
             _ => 2
         };
+
+        private int ObtenerIdGenero() => MCB_Genero.SelectedIndex switch
+        {
+            0 => 1, // Masculino
+            1 => 2, // Femenino
+            2 => 3, // Otro
+            _ => 1
+        };
+
+        // ------------------------------------------------------------------------------------
+    
 
         /// <summary>
         /// Valida campos. Si es creación (no hay _usuarioId), exige contraseña.
@@ -230,20 +263,36 @@ namespace PatitaSystem.Presentacion.Forms
                 if (_usuarioId.HasValue)
                 {
                     // ===== EDITAR (PUT) =====
-                    var req = new UsuarioUpdateRequest
+
+                    var reqDireccion = new DireccionRequest
+                    {
+                        Calle = TXTB_Calle.Text.Trim(),
+                        Altura = TXTB_Altura.Text.Trim(),
+                        Piso = TXTB_Piso.Text.Trim(),
+                        Dpto = TXTB_Dpto.Text.Trim(),
+                        CodigoPostal = TXTB_CodigoPostal.Text.Trim(),
+                        IdLocalidad = 1 // TODO: combo de localidad
+                    };
+
+                    var direccionActualizada = await _direccionApi!.ActualizarAsync(1, reqDireccion);
+
+
+
+
+                    var reqUsuario = new UsuarioUpdateRequest
                     {
                         IdDireccion = 1, // TODO: usar la real cuando implementes alta de dirección
-                        IdGenero = 1, // TODO: combo de género
+                        IdGenero = ObtenerIdGenero(), // TODO: combo de género
                         Dni = TXTB_Dni.Text.Trim(),
                         Apellido = TXTB_Apellido.Text.Trim(),
                         Nombre = TXTB_Nombre.Text.Trim(),
-                        NombreUsuario = DerivarNombreUsuario(),  // o textbox "usuario" si lo agregás
+                        NombreUsuario = TXTB_Usuario.Text.Trim(),  // o textbox "usuario" si lo agregás
                         Email = TXTB_Mail.Text.Trim(),
                         FechaNacimiento = DTP_Nacimiento.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                         Celular = TXTB_Celular.Text.Trim()
                     };
 
-                    var actualizado = await _usuarioApi.UpdateUsuarioAsync(_usuarioId.Value, req);
+                    var actualizado = await _usuarioApi.UpdateUsuarioAsync(_usuarioId.Value, reqUsuario);
 
                     MessageBox.Show($"Usuario actualizado (ID: {actualizado.IdUsuario}).",
                         "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -254,17 +303,44 @@ namespace PatitaSystem.Presentacion.Forms
                 else
                 {
                     // ===== CREAR (POST) =====
-                    var nombreUsuario = DerivarNombreUsuario();
+                    // Para crear un usuario, necesito primero crear la direccion , una vez creada la direccion
+                    // Obtengo su ID y lo uso para crear el usuario con ese ID de direccion recien creado.
+
+                    var direccion = new DireccionRequest
+                    {
+                        Calle = TXTB_Calle.Text.Trim(),
+                        Altura = TXTB_Altura.Text.Trim(),
+                        Piso = TXTB_Piso.Text.Trim(),
+                        Dpto = TXTB_Dpto.Text.Trim(),
+                        CodigoPostal = TXTB_CodigoPostal.Text.Trim(),
+                        IdLocalidad = 1 // TODO: combo de localidad
+                    };
+
+                    if (_direccionApi is null)
+                    {
+                        MessageBox.Show("No se inicializó el cliente de API de Direcciones. Abra este formulario desde el Administrador.",
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    var direccionCreada = await _direccionApi.CrearAsync(direccion);
+
+                    if (direccionCreada is null)
+                    {
+                        MessageBox.Show("No se pudo crear la dirección para el usuario.",
+                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
 
                     var req = new UsuarioCreateRequest
                     {
-                        IdDireccion = 1,
+                        IdDireccion = direccionCreada.IdDireccion,
                         IdRol = ObtenerIdRol(),
                         IdGenero = 1,
                         Dni = TXTB_Dni.Text.Trim(),
                         Apellido = TXTB_Apellido.Text.Trim(),
                         Nombre = TXTB_Nombre.Text.Trim(),
-                        NombreUsuario = nombreUsuario,
+                        NombreUsuario = TXTB_Usuario.Text.Trim(),
                         Password = TXTB_Password.Text,
                         Email = TXTB_Mail.Text.Trim(),
                         Estado = true,
@@ -302,5 +378,7 @@ namespace PatitaSystem.Presentacion.Forms
                 Cursor = Cursors.Default;
             }
         }
+
+
     }
 }

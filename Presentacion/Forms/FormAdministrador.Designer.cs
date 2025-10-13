@@ -152,9 +152,9 @@
             // 
             PNL_UsuarioBotones.Controls.Add(tableLayoutPanel1);
             PNL_UsuarioBotones.Dock = DockStyle.Fill;
-            PNL_UsuarioBotones.Location = new Point(3, 285);
+            PNL_UsuarioBotones.Location = new Point(3, 386);
             PNL_UsuarioBotones.Name = "PNL_UsuarioBotones";
-            PNL_UsuarioBotones.Size = new Size(778, 194);
+            PNL_UsuarioBotones.Size = new Size(778, 93);
             PNL_UsuarioBotones.TabIndex = 6;
             // 
             // tableLayoutPanel1
@@ -166,8 +166,8 @@
             tableLayoutPanel1.Controls.Add(BTN_CrearUsuario, 0, 0);
             tableLayoutPanel1.Controls.Add(BTN_ModificarUsuario, 1, 0);
             tableLayoutPanel1.Controls.Add(BTN_EliminarUsuario, 2, 0);
-            tableLayoutPanel1.Dock = DockStyle.Top;
-            tableLayoutPanel1.Location = new Point(0, 0);
+            tableLayoutPanel1.Dock = DockStyle.Bottom;
+            tableLayoutPanel1.Location = new Point(0, 6);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
@@ -245,7 +245,7 @@
             PNL_ListaUsuario.Dock = DockStyle.Top;
             PNL_ListaUsuario.Location = new Point(3, 2);
             PNL_ListaUsuario.Name = "PNL_ListaUsuario";
-            PNL_ListaUsuario.Size = new Size(778, 283);
+            PNL_ListaUsuario.Size = new Size(778, 384);
             PNL_ListaUsuario.TabIndex = 4;
             // 
             // PNL_BuscarUsuario
@@ -367,11 +367,11 @@
             // 
             // LIS_Usuario
             // 
-            LIS_Usuario.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             LIS_Usuario.AutoSizeTable = false;
             LIS_Usuario.BackColor = Color.FromArgb(255, 255, 255);
             LIS_Usuario.BorderStyle = BorderStyle.None;
             LIS_Usuario.Depth = 0;
+            LIS_Usuario.Dock = DockStyle.Bottom;
             LIS_Usuario.FullRowSelect = true;
             LIS_Usuario.Location = new Point(0, 81);
             LIS_Usuario.Margin = new Padding(3, 2, 3, 2);
@@ -380,7 +380,7 @@
             LIS_Usuario.MouseState = MaterialSkin.MouseState.OUT;
             LIS_Usuario.Name = "LIS_Usuario";
             LIS_Usuario.OwnerDraw = true;
-            LIS_Usuario.Size = new Size(778, 202);
+            LIS_Usuario.Size = new Size(778, 303);
             LIS_Usuario.TabIndex = 3;
             LIS_Usuario.UseCompatibleStateImageBehavior = false;
             LIS_Usuario.View = View.Details;
