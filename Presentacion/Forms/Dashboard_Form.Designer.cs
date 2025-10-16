@@ -28,7 +28,7 @@ partial class Dashboard_Form : MaterialForm
     private void InitializeComponent()
     {
         DRW_Menu = new MaterialDrawer();
-        tabs = new MaterialTabControl();
+        TABS_MenuPatita = new MaterialTabControl();
         TAB_PatitaShop = new TabPage();
         materialCard1 = new MaterialCard();
         LYOUT_PanelPatitaShop = new TableLayoutPanel();
@@ -43,15 +43,25 @@ partial class Dashboard_Form : MaterialForm
         LBL_Turnos = new MaterialLabel();
         BTN_Turnos = new MaterialFloatingActionButton();
         LBL_Mascotas = new MaterialLabel();
+        TAB_PatitaAdmin = new TabPage();
+        materialCard2 = new MaterialCard();
+        tableLayoutPanel1 = new TableLayoutPanel();
+        BTN_Reportes = new MaterialFloatingActionButton();
+        LBL_Menu = new MaterialLabel();
+        BTN_AdminMenu = new MaterialFloatingActionButton();
+        LBL_Reportes = new MaterialLabel();
         BTN_Menu = new MaterialButton();
         PIC_Logo = new PictureBox();
-        tabs.SuspendLayout();
+        TABS_MenuPatita.SuspendLayout();
         TAB_PatitaShop.SuspendLayout();
         materialCard1.SuspendLayout();
         LYOUT_PanelPatitaShop.SuspendLayout();
         TAB_PatitaPelu.SuspendLayout();
         CARD_PatitaPelu.SuspendLayout();
         LYOUT_PanelPatitaPelu.SuspendLayout();
+        TAB_PatitaAdmin.SuspendLayout();
+        materialCard2.SuspendLayout();
+        tableLayoutPanel1.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)PIC_Logo).BeginInit();
         SuspendLayout();
         // 
@@ -60,7 +70,7 @@ partial class Dashboard_Form : MaterialForm
         DRW_Menu.AutoHide = false;
         DRW_Menu.AutoShow = false;
         DRW_Menu.BackgroundWithAccent = false;
-        DRW_Menu.BaseTabControl = tabs;
+        DRW_Menu.BaseTabControl = TABS_MenuPatita;
         DRW_Menu.Depth = 0;
         DRW_Menu.Dock = DockStyle.Left;
         DRW_Menu.HighlightWithAccent = true;
@@ -75,20 +85,21 @@ partial class Dashboard_Form : MaterialForm
         DRW_Menu.UseColors = false;
         DRW_Menu.Visible = false;
         // 
-        // tabs
+        // TABS_MenuPatita
         // 
-        tabs.Anchor = AnchorStyles.None;
-        tabs.Controls.Add(TAB_PatitaShop);
-        tabs.Controls.Add(TAB_PatitaPelu);
-        tabs.Depth = 0;
-        tabs.Location = new Point(215, 279);
-        tabs.MouseState = MouseState.HOVER;
-        tabs.Multiline = true;
-        tabs.Name = "tabs";
-        tabs.SelectedIndex = 0;
-        tabs.Size = new Size(407, 294);
-        tabs.TabIndex = 2;
-        tabs.Visible = false;
+        TABS_MenuPatita.Anchor = AnchorStyles.None;
+        TABS_MenuPatita.Controls.Add(TAB_PatitaShop);
+        TABS_MenuPatita.Controls.Add(TAB_PatitaPelu);
+        TABS_MenuPatita.Controls.Add(TAB_PatitaAdmin);
+        TABS_MenuPatita.Depth = 0;
+        TABS_MenuPatita.Location = new Point(215, 279);
+        TABS_MenuPatita.MouseState = MouseState.HOVER;
+        TABS_MenuPatita.Multiline = true;
+        TABS_MenuPatita.Name = "TABS_MenuPatita";
+        TABS_MenuPatita.SelectedIndex = 0;
+        TABS_MenuPatita.Size = new Size(407, 294);
+        TABS_MenuPatita.TabIndex = 2;
+        TABS_MenuPatita.Visible = false;
         // 
         // TAB_PatitaShop
         // 
@@ -299,6 +310,111 @@ partial class Dashboard_Form : MaterialForm
         LBL_Mascotas.Text = "Mascotas";
         LBL_Mascotas.TextAlign = ContentAlignment.TopCenter;
         // 
+        // TAB_PatitaAdmin
+        // 
+        TAB_PatitaAdmin.Controls.Add(materialCard2);
+        TAB_PatitaAdmin.Location = new Point(4, 24);
+        TAB_PatitaAdmin.Name = "TAB_PatitaAdmin";
+        TAB_PatitaAdmin.Padding = new Padding(3);
+        TAB_PatitaAdmin.Size = new Size(399, 266);
+        TAB_PatitaAdmin.TabIndex = 2;
+        TAB_PatitaAdmin.Text = "PatitaAdmin";
+        TAB_PatitaAdmin.UseVisualStyleBackColor = true;
+        // 
+        // materialCard2
+        // 
+        materialCard2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        materialCard2.AutoScroll = true;
+        materialCard2.BackColor = Color.FromArgb(255, 255, 255);
+        materialCard2.Controls.Add(tableLayoutPanel1);
+        materialCard2.Depth = 0;
+        materialCard2.ForeColor = Color.FromArgb(222, 0, 0, 0);
+        materialCard2.Location = new Point(24, 24);
+        materialCard2.Margin = new Padding(14);
+        materialCard2.MouseState = MouseState.HOVER;
+        materialCard2.Name = "materialCard2";
+        materialCard2.Padding = new Padding(20);
+        materialCard2.Size = new Size(351, 218);
+        materialCard2.TabIndex = 2;
+        // 
+        // tableLayoutPanel1
+        // 
+        tableLayoutPanel1.ColumnCount = 2;
+        tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+        tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+        tableLayoutPanel1.Controls.Add(BTN_Reportes, 1, 0);
+        tableLayoutPanel1.Controls.Add(LBL_Menu, 0, 1);
+        tableLayoutPanel1.Controls.Add(BTN_AdminMenu, 0, 0);
+        tableLayoutPanel1.Controls.Add(LBL_Reportes, 1, 1);
+        tableLayoutPanel1.Dock = DockStyle.Fill;
+        tableLayoutPanel1.Location = new Point(20, 20);
+        tableLayoutPanel1.Margin = new Padding(0);
+        tableLayoutPanel1.Name = "tableLayoutPanel1";
+        tableLayoutPanel1.RowCount = 2;
+        tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 45.91195F));
+        tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 54.08805F));
+        tableLayoutPanel1.Size = new Size(311, 178);
+        tableLayoutPanel1.TabIndex = 0;
+        // 
+        // BTN_Reportes
+        // 
+        BTN_Reportes.Anchor = AnchorStyles.Bottom;
+        BTN_Reportes.BackColor = Color.Transparent;
+        BTN_Reportes.Depth = 0;
+        BTN_Reportes.Icon = Properties.Resources.icon_dog;
+        BTN_Reportes.Location = new Point(203, 22);
+        BTN_Reportes.MouseState = MouseState.HOVER;
+        BTN_Reportes.Name = "BTN_Reportes";
+        BTN_Reportes.Size = new Size(59, 56);
+        BTN_Reportes.TabIndex = 2;
+        BTN_Reportes.Text = "Mascotas";
+        BTN_Reportes.UseCompatibleTextRendering = true;
+        BTN_Reportes.UseVisualStyleBackColor = false;
+        // 
+        // LBL_Menu
+        // 
+        LBL_Menu.Anchor = AnchorStyles.Top;
+        LBL_Menu.Depth = 0;
+        LBL_Menu.Font = new Font("Roboto Medium", 14F, FontStyle.Bold, GraphicsUnit.Pixel);
+        LBL_Menu.FontType = MaterialSkinManager.fontType.Subtitle2;
+        LBL_Menu.Location = new Point(27, 81);
+        LBL_Menu.MouseState = MouseState.HOVER;
+        LBL_Menu.Name = "LBL_Menu";
+        LBL_Menu.Size = new Size(101, 39);
+        LBL_Menu.TabIndex = 1;
+        LBL_Menu.Text = "Menu";
+        LBL_Menu.TextAlign = ContentAlignment.TopCenter;
+        // 
+        // BTN_AdminMenu
+        // 
+        BTN_AdminMenu.Anchor = AnchorStyles.Bottom;
+        BTN_AdminMenu.BackColor = Color.Transparent;
+        BTN_AdminMenu.Depth = 0;
+        BTN_AdminMenu.Icon = Properties.Resources.calendar;
+        BTN_AdminMenu.Location = new Point(49, 22);
+        BTN_AdminMenu.MouseState = MouseState.HOVER;
+        BTN_AdminMenu.Name = "BTN_AdminMenu";
+        BTN_AdminMenu.Size = new Size(56, 56);
+        BTN_AdminMenu.TabIndex = 0;
+        BTN_AdminMenu.Text = "Turnos";
+        BTN_AdminMenu.UseCompatibleTextRendering = true;
+        BTN_AdminMenu.UseVisualStyleBackColor = false;
+        BTN_AdminMenu.Click += BTN_AdminMenu_Click;
+        // 
+        // LBL_Reportes
+        // 
+        LBL_Reportes.Anchor = AnchorStyles.Top;
+        LBL_Reportes.Depth = 0;
+        LBL_Reportes.Font = new Font("Roboto Medium", 14F, FontStyle.Bold, GraphicsUnit.Pixel);
+        LBL_Reportes.FontType = MaterialSkinManager.fontType.Subtitle2;
+        LBL_Reportes.Location = new Point(186, 81);
+        LBL_Reportes.MouseState = MouseState.HOVER;
+        LBL_Reportes.Name = "LBL_Reportes";
+        LBL_Reportes.Size = new Size(94, 39);
+        LBL_Reportes.TabIndex = 3;
+        LBL_Reportes.Text = "Reportes";
+        LBL_Reportes.TextAlign = ContentAlignment.TopCenter;
+        // 
         // BTN_Menu
         // 
         BTN_Menu.AutoSize = false;
@@ -338,26 +454,29 @@ partial class Dashboard_Form : MaterialForm
         Controls.Add(BTN_Menu);
         Controls.Add(DRW_Menu);
         Controls.Add(PIC_Logo);
-        Controls.Add(tabs);
+        Controls.Add(TABS_MenuPatita);
         FormStyle = FormStyles.ActionBar_None;
         Name = "Dashboard_Form";
         Padding = new Padding(3, 24, 3, 3);
         StartPosition = FormStartPosition.CenterScreen;
         Text = "Dashboard";
-        tabs.ResumeLayout(false);
+        TABS_MenuPatita.ResumeLayout(false);
         TAB_PatitaShop.ResumeLayout(false);
         materialCard1.ResumeLayout(false);
         LYOUT_PanelPatitaShop.ResumeLayout(false);
         TAB_PatitaPelu.ResumeLayout(false);
         CARD_PatitaPelu.ResumeLayout(false);
         LYOUT_PanelPatitaPelu.ResumeLayout(false);
+        TAB_PatitaAdmin.ResumeLayout(false);
+        materialCard2.ResumeLayout(false);
+        tableLayoutPanel1.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)PIC_Logo).EndInit();
         ResumeLayout(false);
     }
 
     #endregion
 
-    private MaterialTabControl tabs;
+    private MaterialTabControl TABS_MenuPatita;
     private TabPage TAB_PatitaShop;
     private MaterialCard materialCard1;
     private TabPage TAB_PatitaPelu;
@@ -372,4 +491,11 @@ partial class Dashboard_Form : MaterialForm
     private MaterialLabel LBL_Turnos;
     private MaterialFloatingActionButton BTN_Turnos;
     private MaterialLabel LBL_Mascotas;
+    private TabPage TAB_PatitaAdmin;
+    private MaterialCard materialCard2;
+    private TableLayoutPanel tableLayoutPanel1;
+    private MaterialFloatingActionButton BTN_Reportes;
+    private MaterialLabel LBL_Menu;
+    private MaterialFloatingActionButton BTN_AdminMenu;
+    private MaterialLabel LBL_Reportes;
 }

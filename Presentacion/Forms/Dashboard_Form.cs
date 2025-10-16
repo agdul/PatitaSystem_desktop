@@ -1,13 +1,16 @@
 ﻿// Archivo: Presentacion/Forms/Dashboard_Form.cs
+using MaterialSkin;
+using MaterialSkin.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using PatitaSystem.Dominio.Auth;
+using PatitaSystem.Dominio.Sesion;
+using PatitaSystem.Presentacion.Forms;
+using Presentacion;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using MaterialSkin;
-using MaterialSkin.Controls;
-using PatitaSystem.Dominio.Auth;
-using PatitaSystem.Dominio.Sesion;
 
 namespace PatitaSystem
 {
@@ -15,9 +18,19 @@ namespace PatitaSystem
     /// Dashboard principal con Drawer lateral y pestañas.
     /// - Gestiona apertura/cierre del Drawer.
     /// - Aplica visibilidad de tabs según el rol del usuario (IdRol) en sesión.
+    /// - Cablea botones a formularios externos, ocultando el Dashboard y evitando instancias duplicadas.
     /// </summary>
     public partial class Dashboard_Form : MaterialForm
     {
+        // ---- Servicios inyectados -------------------------------------------
+        private readonly IServiceProvider _serviceProvider;
+        // ---- Formularios hijos (single instance) ----------------------------
+        private FormAdministrador? _formAdministrador;
+        private FormCarrito? _formVendedor;
+        private Turnos_Form? _formTurnos;
+        private FormMascotas? _formMascotas;
+        private LoginStyle_2003? _formReportes;
+
         // ---- Estado interno (drawer) ----------------------------------------
         private bool _drawerShown = false;
         private System.Windows.Forms.Timer? _hideTmr;
@@ -28,7 +41,7 @@ namespace PatitaSystem
         // ---- Tabs (referencias y backup de todas) ---------------------------
         private TabPage? _tabPatitaShop;
         private TabPage? _tabPatitaPelu;
-        // private TabPage? _tabPatitaConfig; // <- (FUTURO) cuando agregues la pestaña de Config
+        // private TabPage? _tabPatitaConfig; // futuro
         private List<TabPage> _todasLasTabs = new();
 
         /// <summary>
@@ -52,7 +65,6 @@ namespace PatitaSystem
                 // Drawer fuera del árbol al iniciar
                 if (DRW_Menu is not null)
                 {
-                    // 🔒 Importante: NO remover del árbol. Sólo ocultar y sacar Dock.
                     DRW_Menu.Visible = false;
                     DRW_Menu.Dock = DockStyle.None;
                     DRW_Menu.IsOpen = false;
@@ -69,41 +81,60 @@ namespace PatitaSystem
             }
         }
 
+
+        // --- Runtime (con DI) ---
+        public Dashboard_Form(IServiceProvider serviceProvider) : this()
+        {
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        }
+
         /// <summary>
-        /// Suministrá la sesión auténticada desde fuera (ej. ContextoPatita) apenas crees el Dashboard.
-        /// LUEGO llama a <see cref="InicializarTabsSegunDesigner"/> y <see cref="AplicarReglasDeRol"/>.
+        /// Configura la sesión autenticada (inyectada desde ContextoPatita).
         /// </summary>
         public void ConfigureWithSession(SesionActual sesion)
         {
             _sesion = sesion ?? throw new ArgumentNullException(nameof(sesion));
-
             InicializarTabsSegunDesigner();
-            // 👇 No aplico reglas acá para evitar animaciones tempranas de Drawer.
-            //    Las aplico en OnShown cuando el form ya está estable.
+            // Reglas de rol se aplican en OnShown cuando el form ya está estable.
         }
 
         /// <summary>
-        /// Si el Designer no conectó eventos, cableamos acá. También
-        /// intentamos inicializar si aún no tenemos snapshot de tabs.
+        /// Cableado de eventos de botones del Dashboard y fallback si aún no indexamos tabs.
         /// </summary>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
+            // ---- Botón hamburguesa (mostrar/ocultar Drawer)
             BTN_Menu.Click -= BTN_Menu_Click;
             BTN_Menu.Click += BTN_Menu_Click;
 
-            // En caso de que ConfigureWithSession aún no se haya llamado,
-            // intentamos al menos indexar las tabs (sin aplicar reglas).
+            // ---- Cableado de navegación
+            BTN_Ventas.Click -= BTN_Ventas_Click;
+            BTN_Ventas.Click += BTN_Ventas_Click;
+
+            BTN_Productos.Click -= BTN_Productos_Click;
+            BTN_Productos.Click += BTN_Productos_Click;
+
+            BTN_Turnos.Click -= BTN_Turnos_Click;
+            BTN_Turnos.Click += BTN_Turnos_Click;
+
+            BTN_Mascotas.Click -= BTN_Mascotas_Click;
+            BTN_Mascotas.Click += BTN_Mascotas_Click;
+
+            BTN_AdminMenu.Click -= BTN_AdminMenu_Click;
+            BTN_AdminMenu.Click += BTN_AdminMenu_Click;
+
+            BTN_Reportes.Click -= BTN_Reportes_Click;
+            BTN_Reportes.Click += BTN_Reportes_Click;
+
+            // Indexar tabs si aun no lo hicimos
             if (_todasLasTabs.Count == 0)
                 InicializarTabsSegunDesigner();
-
-            // ❌ Evitar aplicar reglas acá, ver OnShown.
         }
 
         /// <summary>
-        /// Al mostrarse el formulario (ya creado y sin animación inicial),
-        /// aplicamos reglas de rol y sincronizamos el Drawer.
+        /// Al mostrarse el formulario, aplicar reglas de rol y sincronizar Drawer.
         /// </summary>
         protected override void OnShown(EventArgs e)
         {
@@ -129,14 +160,182 @@ namespace PatitaSystem
         {
             base.OnResize(e);
 
-            if (tabs is not null && tabs.Visible)
+            if (TABS_MenuPatita is not null && TABS_MenuPatita.Visible)
             {
                 int left = (Controls.Contains(DRW_Menu) && DRW_Menu.Visible) ? DRW_Menu.Width : 0;
-                tabs.Left = Math.Max(0, left);
-                tabs.Width = Math.Max(0, ClientSize.Width - left);
+                TABS_MenuPatita.Left = Math.Max(0, left);
+                TABS_MenuPatita.Width = Math.Max(0, ClientSize.Width - left);
             }
 
             ReorganizarAhora();
+        }
+
+        // ---------------------------------------------------------------------
+        // CABLEADO DE BOTONES → VISTAS (single-instance + ocultar dashboard)
+        // ---------------------------------------------------------------------
+
+        private void BTN_Ventas_Click(object? sender, EventArgs e)
+        {
+            if (_formVendedor is null || _formVendedor.IsDisposed)
+            {
+                _formVendedor = new FormCarrito
+                {
+                    StartPosition = FormStartPosition.CenterScreen
+                };
+
+                _formVendedor.FormClosed += (_, __) =>
+                {
+                    _formVendedor?.Dispose();
+                    _formVendedor = null;
+                    this.Show();
+                    this.Activate();
+                };
+            }
+
+            this.Hide();
+            _formVendedor.Show();
+            _formVendedor.BringToFront();
+            _formVendedor.Focus();
+        }
+
+        private void BTN_Productos_Click(object? sender, EventArgs e)
+        {
+            AbrirAdministradorSoloProductos();
+        }
+
+        private void BTN_Turnos_Click(object? sender, EventArgs e)
+        {
+            if (_formTurnos is null || _formTurnos.IsDisposed)
+            {
+                _formTurnos = new Turnos_Form
+                {
+                    StartPosition = FormStartPosition.CenterScreen
+                };
+
+                _formTurnos.FormClosed += (_, __) =>
+                {
+                    _formTurnos?.Dispose();
+                    _formTurnos = null;
+                    this.Show();
+                    this.Activate();
+                };
+            }
+
+            this.Hide();
+            _formTurnos.Show();
+            _formTurnos.BringToFront();
+            _formTurnos.Focus();
+        }
+
+        private void BTN_Mascotas_Click(object? sender, EventArgs e)
+        {
+            if (_formMascotas is null || _formMascotas.IsDisposed)
+            {
+                _formMascotas = new FormMascotas
+                {
+                    StartPosition = FormStartPosition.CenterScreen
+                };
+
+                _formMascotas.FormClosed += (_, __) =>
+                {
+                    _formMascotas?.Dispose();
+                    _formMascotas = null;
+                    this.Show();
+                    this.Activate();
+                };
+            }
+
+            this.Hide();
+            _formMascotas.Show();
+            _formMascotas.BringToFront();
+            _formMascotas.Focus();
+        }
+
+        private void BTN_AdminMenu_Click(object? sender, EventArgs e)
+        {
+            AbrirAdministradorSinRestriccion();
+        }
+
+        private void BTN_Reportes_Click(object? sender, EventArgs e)
+        {
+            if (_formReportes is null || _formReportes.IsDisposed)
+            {
+                _formReportes = new LoginStyle_2003
+                {
+                    StartPosition = FormStartPosition.CenterScreen
+                };
+
+                _formReportes.FormClosed += (_, __) =>
+                {
+                    _formReportes?.Dispose();
+                    _formReportes = null;
+                    this.Show();
+                    this.Activate();
+                };
+            }
+
+            this.Hide();
+            _formReportes.Show();
+            _formReportes.BringToFront();
+            _formReportes.Focus();
+        }
+
+        private void AbrirAdministradorSoloProductos()
+        {
+            if (_formAdministrador is null || _formAdministrador.IsDisposed)
+            {
+                _formAdministrador = new FormAdministrador(_serviceProvider)
+                {
+                    StartPosition = FormStartPosition.CenterScreen
+                };
+
+                _formAdministrador.ModoSoloProductos = true;
+
+                _formAdministrador.FormClosed += (_, __) =>
+                {
+                    _formAdministrador?.Dispose();
+                    _formAdministrador = null;
+                    this.Show();
+                    this.Activate();
+                };
+            }
+            else
+            {
+                _formAdministrador.ModoSoloProductos = true;
+                _formAdministrador.AplicarRestriccionSoloProductos();
+            }
+
+            this.Hide();
+            _formAdministrador.Show();
+            _formAdministrador.BringToFront();
+            _formAdministrador.Focus();
+        }
+
+        private void AbrirAdministradorSinRestriccion()
+        {
+            if (_formAdministrador is null || _formAdministrador.IsDisposed)
+            {
+                _formAdministrador = new FormAdministrador(_serviceProvider)
+                {
+                    StartPosition = FormStartPosition.CenterScreen
+                };
+
+                _formAdministrador.FormClosed += (_, __) =>
+                {
+                    _formAdministrador?.Dispose();
+                    _formAdministrador = null;
+                    this.Show();
+                    this.Activate();
+                };
+            }
+
+            _formAdministrador.ModoSoloProductos = false;
+            _formAdministrador.RestaurarTodasLasTabs();  // importante
+
+            this.Hide();
+            _formAdministrador.Show();
+            _formAdministrador.BringToFront();
+            _formAdministrador.Focus();
         }
 
         // ---------------------------------------------------------------------
@@ -147,20 +346,18 @@ namespace PatitaSystem
         {
             if (DRW_Menu is null) return;
 
-            // Asegurar acople y estado coherente antes de abrir
             FinalizarActualizacionSeguraDelDrawer();
 
-            // Volver visible y dockear a la izquierda
             DRW_Menu.Visible = true;
             DRW_Menu.Dock = DockStyle.Left;
             DRW_Menu.BringToFront();
             DRW_Menu.IsOpen = true;
 
-            if (tabs is not null)
+            if (TABS_MenuPatita is not null)
             {
-                tabs.Visible = true;
-                tabs.Left = DRW_Menu.Width;
-                tabs.Width = Math.Max(0, ClientSize.Width - tabs.Left);
+                TABS_MenuPatita.Visible = true;
+                TABS_MenuPatita.Left = DRW_Menu.Width;
+                TABS_MenuPatita.Width = Math.Max(0, ClientSize.Width - TABS_MenuPatita.Left);
             }
 
             _drawerShown = true;
@@ -188,16 +385,15 @@ namespace PatitaSystem
         {
             DisposeHideTimerIfAny();
 
-            if (tabs is not null)
+            if (TABS_MenuPatita is not null)
             {
-                tabs.Visible = false;
-                tabs.Left = 0;
-                tabs.Width = ClientSize.Width;
+                TABS_MenuPatita.Visible = false;
+                TABS_MenuPatita.Left = 0;
+                TABS_MenuPatita.Width = ClientSize.Width;
             }
 
             if (DRW_Menu is not null)
             {
-                // 🔒 Importante: NO remover de Controls, sólo ocultar/sin dock
                 DRW_Menu.IsOpen = false;
                 DRW_Menu.Visible = false;
                 DRW_Menu.Dock = DockStyle.None;
@@ -247,18 +443,12 @@ namespace PatitaSystem
         // ROLES → VISIBILIDAD DE TABS
         // ---------------------------------------------------------------------
 
-        /// <summary>
-        /// Indexa las TabPage existentes por su Name (según Designer) y
-        /// guarda un snapshot del orden original para restaurar cuando cambie el rol.
-        /// </summary>
         private void InicializarTabsSegunDesigner()
         {
-            if (tabs is null) return;
+            if (TABS_MenuPatita is null) return;
 
-            // Cacheo el orden original (para poder restaurar)
-            _todasLasTabs = tabs.TabPages.Cast<TabPage>().ToList();
+            _todasLasTabs = TABS_MenuPatita.TabPages.Cast<TabPage>().ToList();
 
-            // Buscar por Name, tolerando nombres del Designer (minúsculas/mayúsculas)
             string[] nombresShop = { "TAB_PatitaShop", "tabPatitaShop" };
             string[] nombresPelu = { "TAB_PatitaPelu", "tabPatitaPelu" };
 
@@ -268,83 +458,56 @@ namespace PatitaSystem
             _tabPatitaPelu = _todasLasTabs.FirstOrDefault(tp =>
                 nombresPelu.Any(n => string.Equals(tp.Name, n, StringComparison.OrdinalIgnoreCase)));
 
-            // (FUTURO) _tabPatitaConfig cuando exista
-
-            // Evento Suscripto para blindar cambios de colección
             SuscribirEventosDeTabs();
-
-            // Dejar enlazado/normalizado el Drawer (sin aplicar reglas todavía)
             FinalizarActualizacionSeguraDelDrawer();
         }
 
-
-        /// <summary>
-        /// Se suscribe a los eventos del TabControl para mantener el Drawer
-        /// siempre consistente (índice y cantidad).
-        /// </summary>
         private void SuscribirEventosDeTabs()
         {
-            if (tabs is null) return;
+            if (TABS_MenuPatita is null) return;
 
-            tabs.ControlAdded -= Tabs_ColeccionCambio;
-            tabs.ControlRemoved -= Tabs_ColeccionCambio;
-            tabs.SelectedIndexChanged -= Tabs_SeleccionCambio;
+            TABS_MenuPatita.ControlAdded -= Tabs_ColeccionCambio;
+            TABS_MenuPatita.ControlRemoved -= Tabs_ColeccionCambio;
+            TABS_MenuPatita.SelectedIndexChanged -= Tabs_SeleccionCambio;
 
-            tabs.ControlAdded += Tabs_ColeccionCambio;
-            tabs.ControlRemoved += Tabs_ColeccionCambio;
-            tabs.SelectedIndexChanged += Tabs_SeleccionCambio;
+            TABS_MenuPatita.ControlAdded += Tabs_ColeccionCambio;
+            TABS_MenuPatita.ControlRemoved += Tabs_ColeccionCambio;
+            TABS_MenuPatita.SelectedIndexChanged += Tabs_SeleccionCambio;
         }
 
-        /// <summary>
-        /// Cuando cambia la colección de pestañas (agregar/quitar),
-        /// desacopla-actualiza-reacopla el Drawer y normaliza el índice.
-        /// </summary>
         private void Tabs_ColeccionCambio(object? sender, ControlEventArgs e)
         {
             ComenzarActualizacionSeguraDelDrawer();
 
-            if (tabs!.TabPages.Count == 0)
+            if (TABS_MenuPatita!.TabPages.Count == 0)
             {
-                tabs.SelectedIndex = -1;
+                TABS_MenuPatita.SelectedIndex = -1;
                 FinalizarActualizacionSeguraDelDrawer();
                 return;
             }
 
-            if (tabs.SelectedIndex < 0) tabs.SelectedIndex = 0;
-            if (tabs.SelectedIndex >= tabs.TabPages.Count)
-                tabs.SelectedIndex = tabs.TabPages.Count - 1;
+            if (TABS_MenuPatita.SelectedIndex < 0) TABS_MenuPatita.SelectedIndex = 0;
+            if (TABS_MenuPatita.SelectedIndex >= TABS_MenuPatita.TabPages.Count)
+                TABS_MenuPatita.SelectedIndex = TABS_MenuPatita.TabPages.Count - 1;
 
             FinalizarActualizacionSeguraDelDrawer();
         }
 
-        /// <summary>
-        /// Cuando cambia la pestaña seleccionada, forzamos repintado seguro del Drawer.
-        /// </summary>
         private void Tabs_SeleccionCambio(object? sender, EventArgs e)
         {
             FinalizarActualizacionSeguraDelDrawer();
         }
 
-
-
-        /// <summary>
-        /// Mantiene el Drawer alineado con el TabControl:
-        /// - Enlaza BaseTabControl
-        /// - Normaliza tabs.SelectedIndex
-        /// - Refresca el Drawer
-        /// </summary>
         private void SincronizarDrawerConTabs()
         {
-            if (DRW_Menu is null || tabs is null) return;
+            if (DRW_Menu is null || TABS_MenuPatita is null) return;
 
-            // Asegurar el enlace (si no lo seteaste en el Designer)
-            if (DRW_Menu.BaseTabControl != tabs)
-                DRW_Menu.BaseTabControl = tabs;
+            if (DRW_Menu.BaseTabControl != TABS_MenuPatita)
+                DRW_Menu.BaseTabControl = TABS_MenuPatita;
 
-            // Si no hay páginas: oculto Drawer y dejo el TabControl "sin selección"
-            if (tabs.TabPages.Count == 0)
+            if (TABS_MenuPatita.TabPages.Count == 0)
             {
-                tabs.SelectedIndex = -1;
+                TABS_MenuPatita.SelectedIndex = -1;
                 DRW_Menu.IsOpen = false;
                 DRW_Menu.Visible = false;
                 DRW_Menu.Dock = DockStyle.None;
@@ -352,85 +515,71 @@ namespace PatitaSystem
                 return;
             }
 
-            // Clamp del índice seleccionado del TabControl
-            if (tabs.SelectedIndex < 0)
-                tabs.SelectedIndex = 0;
-            if (tabs.SelectedIndex >= tabs.TabPages.Count)
-                tabs.SelectedIndex = tabs.TabPages.Count - 1;
+            if (TABS_MenuPatita.SelectedIndex < 0)
+                TABS_MenuPatita.SelectedIndex = 0;
+            if (TABS_MenuPatita.SelectedIndex >= TABS_MenuPatita.TabPages.Count)
+                TABS_MenuPatita.SelectedIndex = TABS_MenuPatita.TabPages.Count - 1;
 
-            // Refrescar Drawer (re-pinta con el índice válido)
             DRW_Menu.Invalidate();
             DRW_Menu.Refresh();
         }
 
-        /// <summary>
-        /// Desacopla el Drawer del TabControl y lo deja oculto/sin dock
-        /// para evitar que su AnimationManager dispare ticks mientras cambiamos tabs.
-        /// </summary>
         private void ComenzarActualizacionSeguraDelDrawer()
         {
             if (DRW_Menu is null) return;
 
-            DRW_Menu.BaseTabControl = null;   // desacoplar
+            DRW_Menu.BaseTabControl = null;
             DRW_Menu.IsOpen = false;
             DRW_Menu.Visible = false;
             DRW_Menu.Dock = DockStyle.None;
 
             DRW_Menu.SuspendLayout();
-            tabs?.SuspendLayout();
+            TABS_MenuPatita?.SuspendLayout();
         }
 
-        /// <summary>
-        /// Reacopla el Drawer al TabControl, normaliza SelectedIndex
-        /// y refresca el Drawer con estado consistente.
-        /// </summary>
         private void FinalizarActualizacionSeguraDelDrawer()
         {
-            if (tabs is null || DRW_Menu is null) return;
+            if (TABS_MenuPatita is null || DRW_Menu is null) return;
 
-            DRW_Menu.BaseTabControl = tabs;
+            DRW_Menu.BaseTabControl = TABS_MenuPatita;
 
-            if (tabs.TabPages.Count == 0)
+            if (TABS_MenuPatita.TabPages.Count == 0)
             {
-                tabs.SelectedIndex = -1;
+                TABS_MenuPatita.SelectedIndex = -1;
             }
             else
             {
-                if (tabs.SelectedIndex < 0) tabs.SelectedIndex = 0;
-                if (tabs.SelectedIndex >= tabs.TabPages.Count)
-                    tabs.SelectedIndex = tabs.TabPages.Count - 1;
+                if (TABS_MenuPatita.SelectedIndex < 0) TABS_MenuPatita.SelectedIndex = 0;
+                if (TABS_MenuPatita.SelectedIndex >= TABS_MenuPatita.TabPages.Count)
+                    TABS_MenuPatita.SelectedIndex = TABS_MenuPatita.TabPages.Count - 1;
             }
 
-            tabs.ResumeLayout(performLayout: false);
+            TABS_MenuPatita.ResumeLayout(performLayout: false);
             DRW_Menu.ResumeLayout(performLayout: false);
             DRW_Menu.Invalidate();
             DRW_Menu.Refresh();
         }
 
-        /// <summary>
-        /// Aplica la regla de negocio: qué tabs ve cada rol.
-        /// </summary>
         private void AplicarReglasDeRol()
         {
-            if (tabs is null || _todasLasTabs.Count == 0) return;
+            if (TABS_MenuPatita is null || _todasLasTabs.Count == 0) return;
 
-            // Restaurar todas antes de filtrar (importante si cambiás de usuario sin cerrar la app)
+            // Desacoplar el Drawer una sola vez para todas las operaciones
             ComenzarActualizacionSeguraDelDrawer();
+
+            // 1) Restaurar (sin Clear)
             RestaurarTodasLasTabs(coreOnly: true);
 
             int rol = _sesion?.Usuario?.IdRol ?? 0;
 
             if (rol == Roles.Admin)
             {
-                // Admin ve TODO: no hacemos nada más.
-                // (Cuando implementes Config, Admin la verá también).
                 FinalizarActualizacionSeguraDelDrawer();
                 return;
             }
 
             if (rol == Roles.Estilista)
             {
-                // Estilista: sólo PatitaPelu
                 QuitarTodosMenos(_tabPatitaPelu, coreOnly: true);
                 FinalizarActualizacionSeguraDelDrawer();
                 return;
@@ -438,44 +587,57 @@ namespace PatitaSystem
 
             if (rol == Roles.Vendedor)
             {
-                // Vendedor: sólo PatitaShop
                 QuitarTodosMenos(_tabPatitaShop, coreOnly: true);
                 FinalizarActualizacionSeguraDelDrawer();
                 return;
             }
 
-            // Rol desconocido: por seguridad, no mostrar nada (o mostrar lo mínimo).
             QuitarTodosMenos(null, coreOnly: true);
             FinalizarActualizacionSeguraDelDrawer();
         }
 
-        /// <summary>
-        /// Quita del TabControl todas las tabs excepto la permitida. Si la permitida es null, quita todas.
-        /// </summary>
         private void QuitarTodosMenos(TabPage? tabPermitida, bool coreOnly = false)
         {
+            if (TABS_MenuPatita is null) return;
+
+            // Seleccionar primero la tab permitida (si existe) para no disparar deselect raro
+            if (tabPermitida is not null && TABS_MenuPatita.TabPages.Contains(tabPermitida))
+                TABS_MenuPatita.SelectedTab = tabPermitida;
+
             foreach (var tp in _todasLasTabs)
             {
-                if (tp != tabPermitida && tabs.TabPages.Contains(tp))
-                    tabs.TabPages.Remove(tp);
+                if (tp != tabPermitida && TABS_MenuPatita.TabPages.Contains(tp))
+                    TABS_MenuPatita.TabPages.Remove(tp);
             }
 
-            if (tabPermitida is not null && !tabs.TabPages.Contains(tabPermitida))
-                tabs.TabPages.Add(tabPermitida);
+            if (tabPermitida is not null && !TABS_MenuPatita.TabPages.Contains(tabPermitida))
+                TABS_MenuPatita.TabPages.Add(tabPermitida);
 
-            if (tabPermitida is not null)
-                tabs.SelectedTab = tabPermitida;
+            // Clamp de selección
+            if (TABS_MenuPatita.TabPages.Count == 0)
+                TABS_MenuPatita.SelectedIndex = -1;
+            else if (TABS_MenuPatita.SelectedIndex < 0)
+                TABS_MenuPatita.SelectedIndex = 0;
 
             if (!coreOnly) FinalizarActualizacionSeguraDelDrawer();
         }
 
-        /// <summary>
-        /// Vuelve a poner todas las TabPage en el orden original.
-        /// </summary>
         private void RestaurarTodasLasTabs(bool coreOnly = false)
         {
-            tabs.TabPages.Clear();
-            tabs.TabPages.AddRange(_todasLasTabs.ToArray());
+            if (TABS_MenuPatita is null) return;
+
+            // *** IMPORTANTE: no usar Clear() aquí ***
+            foreach (var tp in _todasLasTabs)
+            {
+                if (!TABS_MenuPatita.TabPages.Contains(tp))
+                    TABS_MenuPatita.TabPages.Add(tp);
+            }
+
+            // Selección estable
+            if (TABS_MenuPatita.TabPages.Count > 0 && TABS_MenuPatita.SelectedIndex < 0)
+                TABS_MenuPatita.SelectedIndex = 0;
+            if (TABS_MenuPatita.SelectedIndex >= TABS_MenuPatita.TabPages.Count)
+                TABS_MenuPatita.SelectedIndex = TABS_MenuPatita.TabPages.Count - 1;
 
             if (!coreOnly) FinalizarActualizacionSeguraDelDrawer();
         }
