@@ -64,6 +64,15 @@ internal static class Program
         services.AddSingleton<IAuthService, AuthService>();
         services.AddSingleton<SesionActual>(); // Singleton para mantener la sesión actual
 
+
+        // ===== ApiClients tipados (creados desde los HttpClient con nombre) =====
+        services.AddTransient<ProductoApiClient>(sp =>
+            new ProductoApiClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("PatitaApiAuth")));
+
+        services.AddTransient<LineaApiClient>(sp =>
+            new LineaApiClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("PatitaApiPublic")));
+
+
         // ===== UI (forms) =====
         services.AddTransient<Login_Form>();
         services.AddTransient<Dashboard_Form>();

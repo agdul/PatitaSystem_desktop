@@ -1,17 +1,17 @@
 ﻿// Archivo: Presentacion/Forms/FormAdministrador.cs
+using static PatitaSystem.Program;  // para acceder a Program.Services si lo tenés como global
+using Microsoft.Extensions.DependencyInjection;
 using MaterialSkin;
 using MaterialSkin.Controls;
 using PatitaSystem.Dominio.Usuarios;           // DTO
 using PatitaSystem.Infraestructura.Http;       // AuthHeader + UsuarioApiClient
 using PatitaSystem.Infraestructura.Seguridad;  // TokenStore
+using PatitaSystem.Presentacion.Forms;
 using System.Net;
 using System.Net.Http;                         // HttpClient
 using System.Net.Http.Headers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using PatitaSystem.Dominio.Producto;
+
 
 namespace PatitaSystem.Presentacion.Forms
 {
@@ -36,6 +36,7 @@ namespace PatitaSystem.Presentacion.Forms
         // === BUSCADOR: estado y debounce ===
         private System.Windows.Forms.Timer? _buscadorTmr;
         private List<UsuarioListadoDto> _usuariosCache = new(); // ajustá el tipo exacto si difiere
+        private List<ProductoResponse> _productosCache = new();
 
 
         /// <summary>
@@ -49,14 +50,17 @@ namespace PatitaSystem.Presentacion.Forms
         // =========================
         private readonly UsuarioApiClient _usuarioApi;
         private readonly DireccionApiClient _direccionApi;
+        private readonly IServiceProvider _serviceProvider;
 
         // Una sola instancia para el modal de registro
         private FormRegistrarUsuario? _frmRegistrarUsuario;
 
-        public FormAdministrador()
+        public FormAdministrador(IServiceProvider serviceProvider)
         {
             InitializeComponent();
             TomarSnapshotDeTabsInicial();
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+
 
             // -----------------------------
             // MaterialSkin (tu configuración)
@@ -95,6 +99,7 @@ namespace PatitaSystem.Presentacion.Forms
 
             _usuarioApi = new UsuarioApiClient(http);
             _direccionApi = new DireccionApiClient(http);
+            
 
             // -----------------------------------------
             // Config columnas + carga real al mostrar UI
@@ -185,6 +190,7 @@ namespace PatitaSystem.Presentacion.Forms
 
             // Aquí se vuelve a acoplar y **se muestra** el Drawer
             SincronizarDrawerConTabs();
+            _ = CargarProductosDesdeApiAsync();
         }
 
 
@@ -402,7 +408,7 @@ namespace PatitaSystem.Presentacion.Forms
             {
                 LIST_Producto.Columns.Add("ID", 50);
                 LIST_Producto.Columns.Add("Producto", 150);
-                LIST_Producto.Columns.Add("Stock", 175);
+                LIST_Producto.Columns.Add("Estado", 100);
             }
         }
 
@@ -732,6 +738,108 @@ namespace PatitaSystem.Presentacion.Forms
             TXT_BuscarUsuario.TextChanged += TXT_BuscarUsuario_TextChanged;
 
             AplicarFiltroUsuarios(string.Empty);
+        }
+
+        private async void BTN_AgregarProducto_Click(object sender, EventArgs e)
+        {
+            // Evitar instancias duplicadas: si ya está abierto, lo traemos al frente
+            var abierto = Application.OpenForms.OfType<FormAgregarProducto>().FirstOrDefault();
+            if (abierto is not null)
+            {
+                if (abierto.WindowState == FormWindowState.Minimized)
+                    abierto.WindowState = FormWindowState.Normal;
+
+                abierto.BringToFront();
+                abierto.Activate();
+                return;
+            }
+
+            // Deshabilitar el botón mientras se muestra el modal
+            if (BTN_AgregarProducto is not null) BTN_AgregarProducto.Enabled = false;
+
+            try
+            {
+                var productoApi = _serviceProvider.GetRequiredService<ProductoApiClient>();
+                var lineaApi = _serviceProvider.GetRequiredService<LineaApiClient>();
+                using var frm = new FormAgregarProducto(productoApi, lineaApi); // si tu formulario requiere dependencias, inyéctalas acá
+                var result =  frm.ShowDialog(this);
+
+                // Si confirmaste el alta en el modal, refrescá el listado (descomentá si ya existe el método)
+                if (result == DialogResult.OK)
+                {
+                    await CargarProductosDesdeApiAsync();
+                    // RenderProductos(_productosCache); // o el método que uses para repintar
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"No se pudo abrir 'Agregar Producto'.\n\nDetalle: {ex.Message}",
+                    "Productos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (BTN_AgregarProducto is not null) BTN_AgregarProducto.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// GET /producto/ y pintado de filas en LIST_Producto.
+        /// Usa DI para resolver ProductoApiClient (con token).
+        /// </summary>
+        private async Task CargarProductosDesdeApiAsync()
+        {
+            try
+            {
+                var productoApi = _serviceProvider.GetRequiredService<ProductoApiClient>();
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+
+                var productos = await productoApi.ListarAsync(cts.Token);
+                _productosCache = productos.ToList();
+
+                RenderProductos(_productosCache);
+            }
+            catch (TaskCanceledException)
+            {
+                MessageBox.Show("La solicitud de productos expiró (timeout).",
+                    "Productos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (HttpRequestException ex)
+            {
+                MessageBox.Show($"No se pudo conectar con la API de productos.\n\nDetalle: {ex.Message}",
+                    "Productos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error inesperado al cargar productos:\n{ex}",
+                    "Productos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Rellena el ListView LIST_Producto con ID, Nombre y (por ahora) Stock "-".
+        /// </summary>
+        private void RenderProductos(IEnumerable<ProductoResponse> lista)
+        {
+            if (LIST_Producto.View != View.Details)
+                LIST_Producto.View = View.Details;
+
+            LIST_Producto.BeginUpdate();
+            LIST_Producto.Items.Clear();
+
+            foreach (var p in lista)
+            {
+                // Stock: no viene en ProductoResponse; mostramos "-" hasta que definamos la fuente real
+                var item = new ListViewItem(new[]
+                {
+                    p.IdProducto.ToString(),
+                    p.NombreProducto ?? string.Empty,
+                    p.EstadoProducto ? "Activo" : "Inactivo",
+                });
+
+                LIST_Producto.Items.Add(item);
+            }
+
+            LIST_Producto.EndUpdate();
         }
 
     }

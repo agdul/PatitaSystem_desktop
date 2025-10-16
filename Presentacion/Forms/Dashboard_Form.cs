@@ -1,15 +1,16 @@
 ﻿// Archivo: Presentacion/Forms/Dashboard_Form.cs
+using MaterialSkin;
+using MaterialSkin.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using PatitaSystem.Dominio.Auth;
+using PatitaSystem.Dominio.Sesion;
+using PatitaSystem.Presentacion.Forms;
+using Presentacion;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using MaterialSkin;
-using MaterialSkin.Controls;
-using PatitaSystem.Dominio.Auth;
-using PatitaSystem.Dominio.Sesion;
-using PatitaSystem.Presentacion.Forms;
-using Presentacion;
 
 namespace PatitaSystem
 {
@@ -21,6 +22,8 @@ namespace PatitaSystem
     /// </summary>
     public partial class Dashboard_Form : MaterialForm
     {
+        // ---- Servicios inyectados -------------------------------------------
+        private readonly IServiceProvider _serviceProvider;
         // ---- Formularios hijos (single instance) ----------------------------
         private FormAdministrador? _formAdministrador;
         private FormCarrito? _formVendedor;
@@ -76,6 +79,13 @@ namespace PatitaSystem
                    "Dashboard", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 throw;
             }
+        }
+
+
+        // --- Runtime (con DI) ---
+        public Dashboard_Form(IServiceProvider serviceProvider) : this()
+        {
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
         /// <summary>
@@ -274,7 +284,7 @@ namespace PatitaSystem
         {
             if (_formAdministrador is null || _formAdministrador.IsDisposed)
             {
-                _formAdministrador = new FormAdministrador
+                _formAdministrador = new FormAdministrador(_serviceProvider)
                 {
                     StartPosition = FormStartPosition.CenterScreen
                 };
@@ -305,7 +315,7 @@ namespace PatitaSystem
         {
             if (_formAdministrador is null || _formAdministrador.IsDisposed)
             {
-                _formAdministrador = new FormAdministrador
+                _formAdministrador = new FormAdministrador(_serviceProvider)
                 {
                     StartPosition = FormStartPosition.CenterScreen
                 };

@@ -712,6 +712,7 @@
             BTN_AgregarProducto.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             BTN_AgregarProducto.UseAccentColor = false;
             BTN_AgregarProducto.UseVisualStyleBackColor = true;
+            BTN_AgregarProducto.Click += BTN_AgregarProducto_Click;
             // 
             // PNL_ProductoLista
             // 
