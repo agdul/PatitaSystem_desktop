@@ -23,26 +23,26 @@ namespace PatitaSystem.Infraestructura.Http
         }
         
         /// <summary>GET /linea/ — Lista todas las líneas con sus categorías.</summary>
-        public async Task<IReadOnlyList<LineaResponce>> ListarAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<LineaResponse>> ListarAsync(CancellationToken ct = default)
         {
             using var resp = await _http.GetAsync("linea/", ct).ConfigureAwait(false);
             var text = await resp.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
             if (!resp.IsSuccessStatusCode)
                 throw new HttpRequestException($"API Línea devolvió {(int)resp.StatusCode} {resp.ReasonPhrase}. Cuerpo: {text}");
 
-            var data = JsonSerializer.Deserialize<List<LineaResponce>>(text, _json);
-            return data ?? new List<LineaResponce>();
+            var data = JsonSerializer.Deserialize<List<LineaResponse>>(text, _json);
+            return data ?? new List<LineaResponse>();
         }
 
         /// <summary>GET /linea/{id_linea}</summary>
-        public async Task<LineaResponce?> GetPorIdAsync(int idLinea, CancellationToken ct = default)
+        public async Task<LineaResponse?> GetPorIdAsync(int idLinea, CancellationToken ct = default)
         {
             using var resp = await _http.GetAsync($"linea/{idLinea}", ct).ConfigureAwait(false);
             var text = await resp.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
             if (!resp.IsSuccessStatusCode)
                 throw new HttpRequestException($"API Línea devolvió {(int)resp.StatusCode} {resp.ReasonPhrase}. Cuerpo: {text}");
 
-            return JsonSerializer.Deserialize<LineaResponce>(text, _json);
+            return JsonSerializer.Deserialize<LineaResponse>(text, _json);
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PatitaSystem.Dominio.Linea
 {
-    public class LineaResponce
+    public class LineaResponse
     {
         [JsonPropertyName("id_linea")]
         public int IdLinea { get; set; }

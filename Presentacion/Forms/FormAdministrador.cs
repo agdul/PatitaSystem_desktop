@@ -50,6 +50,7 @@ namespace PatitaSystem.Presentacion.Forms
         // =========================
         private readonly UsuarioApiClient _usuarioApi;
         private readonly DireccionApiClient _direccionApi;
+        private readonly PresentacionApiClient _presentacionApi;
         private readonly IServiceProvider _serviceProvider;
 
         // Una sola instancia para el modal de registro
@@ -99,7 +100,8 @@ namespace PatitaSystem.Presentacion.Forms
 
             _usuarioApi = new UsuarioApiClient(http);
             _direccionApi = new DireccionApiClient(http);
-            
+            _presentacionApi = new PresentacionApiClient(http);
+
 
             // -----------------------------------------
             // Config columnas + carga real al mostrar UI
@@ -761,7 +763,9 @@ namespace PatitaSystem.Presentacion.Forms
             {
                 var productoApi = _serviceProvider.GetRequiredService<ProductoApiClient>();
                 var lineaApi = _serviceProvider.GetRequiredService<LineaApiClient>();
-                using var frm = new FormAgregarProducto(productoApi, lineaApi); // si tu formulario requiere dependencias, inyéctalas acá
+                var presentacionApi = _serviceProvider.GetRequiredService<PresentacionApiClient>();
+
+                using var frm = new FormAgregarProducto(productoApi, lineaApi, presentacionApi); // si tu formulario requiere dependencias, inyéctalas acá
                 var result =  frm.ShowDialog(this);
 
                 // Si confirmaste el alta en el modal, refrescá el listado (descomentá si ya existe el método)

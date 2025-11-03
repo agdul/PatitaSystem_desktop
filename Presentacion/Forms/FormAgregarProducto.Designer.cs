@@ -46,7 +46,6 @@
             TXTB_PorcentajeAumento = new MaterialSkin.Controls.MaterialTextBox2();
             TXTB_NombrePresentacion = new MaterialSkin.Controls.MaterialTextBox2();
             TXT_Descripcion = new MaterialSkin.Controls.MaterialTextBox2();
-            CBX_Productos = new MaterialSkin.Controls.MaterialComboBox();
             TXT_Stock = new MaterialSkin.Controls.MaterialTextBox2();
             TXT_PrecioDeCompra = new MaterialSkin.Controls.MaterialTextBox2();
             PNL_CARproducto = new Panel();
@@ -54,6 +53,7 @@
             LBL_AgregarPresentacion = new MaterialSkin.Controls.MaterialLabel();
             CAR_Producto = new MaterialSkin.Controls.MaterialCard();
             LBL_Producto = new MaterialSkin.Controls.MaterialLabel();
+            TXT_ProductoBuscar = new MaterialSkin.Controls.MaterialMultiLineTextBox2();
             PNL_Principal.SuspendLayout();
             PNL_Izq.SuspendLayout();
             PNL_ImgLogo.SuspendLayout();
@@ -254,11 +254,11 @@
             // CAR_ProductoDer
             // 
             CAR_ProductoDer.BackColor = Color.FromArgb(255, 255, 255);
+            CAR_ProductoDer.Controls.Add(TXT_ProductoBuscar);
             CAR_ProductoDer.Controls.Add(PNL_AgregarProducto);
             CAR_ProductoDer.Controls.Add(TXTB_PorcentajeAumento);
             CAR_ProductoDer.Controls.Add(TXTB_NombrePresentacion);
             CAR_ProductoDer.Controls.Add(TXT_Descripcion);
-            CAR_ProductoDer.Controls.Add(CBX_Productos);
             CAR_ProductoDer.Controls.Add(TXT_Stock);
             CAR_ProductoDer.Controls.Add(TXT_PrecioDeCompra);
             CAR_ProductoDer.Depth = 0;
@@ -391,30 +391,6 @@
             TXT_Descripcion.TrailingIcon = null;
             TXT_Descripcion.UseSystemPasswordChar = false;
             // 
-            // CBX_Productos
-            // 
-            CBX_Productos.AutoResize = false;
-            CBX_Productos.BackColor = Color.FromArgb(255, 255, 255);
-            CBX_Productos.Depth = 0;
-            CBX_Productos.DrawMode = DrawMode.OwnerDrawVariable;
-            CBX_Productos.DropDownHeight = 174;
-            CBX_Productos.DropDownStyle = ComboBoxStyle.DropDownList;
-            CBX_Productos.DropDownWidth = 121;
-            CBX_Productos.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Bold, GraphicsUnit.Pixel);
-            CBX_Productos.ForeColor = Color.FromArgb(222, 0, 0, 0);
-            CBX_Productos.FormattingEnabled = true;
-            CBX_Productos.Hint = "Producto";
-            CBX_Productos.IntegralHeight = false;
-            CBX_Productos.ItemHeight = 43;
-            CBX_Productos.Location = new Point(54, 39);
-            CBX_Productos.Margin = new Padding(3, 2, 3, 2);
-            CBX_Productos.MaxDropDownItems = 4;
-            CBX_Productos.MouseState = MaterialSkin.MouseState.OUT;
-            CBX_Productos.Name = "CBX_Productos";
-            CBX_Productos.Size = new Size(264, 49);
-            CBX_Productos.StartIndex = 0;
-            CBX_Productos.TabIndex = 3;
-            // 
             // TXT_Stock
             // 
             TXT_Stock.AnimateReadOnly = false;
@@ -542,6 +518,31 @@
             LBL_Producto.Text = "AGREGAR PRODUCTO";
             LBL_Producto.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // TXT_ProductoBuscar
+            // 
+            TXT_ProductoBuscar.AnimateReadOnly = false;
+            TXT_ProductoBuscar.BackgroundImageLayout = ImageLayout.None;
+            TXT_ProductoBuscar.CharacterCasing = CharacterCasing.Normal;
+            TXT_ProductoBuscar.Depth = 0;
+            TXT_ProductoBuscar.HideSelection = true;
+            TXT_ProductoBuscar.Hint = "Buscar Producto";
+            TXT_ProductoBuscar.Location = new Point(54, 44);
+            TXT_ProductoBuscar.MaxLength = 32767;
+            TXT_ProductoBuscar.MouseState = MaterialSkin.MouseState.OUT;
+            TXT_ProductoBuscar.Name = "TXT_ProductoBuscar";
+            TXT_ProductoBuscar.PasswordChar = '\0';
+            TXT_ProductoBuscar.ReadOnly = false;
+            TXT_ProductoBuscar.ScrollBars = ScrollBars.None;
+            TXT_ProductoBuscar.SelectedText = "";
+            TXT_ProductoBuscar.SelectionLength = 0;
+            TXT_ProductoBuscar.SelectionStart = 0;
+            TXT_ProductoBuscar.ShortcutsEnabled = true;
+            TXT_ProductoBuscar.Size = new Size(264, 46);
+            TXT_ProductoBuscar.TabIndex = 8;
+            TXT_ProductoBuscar.TabStop = false;
+            TXT_ProductoBuscar.TextAlign = HorizontalAlignment.Left;
+            TXT_ProductoBuscar.UseSystemPasswordChar = false;
+            // 
             // FormAgregarProducto
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -585,7 +586,6 @@
         private MaterialSkin.Controls.MaterialCard CAR_Producto;
         private MaterialSkin.Controls.MaterialLabel LBL_AgregarProducto;
         private MaterialSkin.Controls.MaterialComboBox CBX_Categoria;
-        private MaterialSkin.Controls.MaterialComboBox CBX_Productos;
         private MaterialSkin.Controls.MaterialComboBox CBX_Linea;
         private MaterialSkin.Controls.MaterialCard CAR_ProductoDer;
         private Panel PNL_Izq;
@@ -606,5 +606,6 @@
         private MaterialSkin.Controls.MaterialTextBox2 TXTB_PorcentajeAumento;
         private Panel PNL_AgregarProducto;
         private MaterialSkin.Controls.MaterialButton BTN_AgregarPresentacion;
+        private MaterialSkin.Controls.MaterialMultiLineTextBox2 TXT_ProductoBuscar;
     }
 }
